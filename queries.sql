@@ -73,14 +73,24 @@ What is sale vs expenditure
 
 
 Does the sale report by author
-SELECT sum(book.quantity_sold), sum (book.quantity_sold * * book.price) AS revenue
-FROM book, author
-GROUP BY author
+SELECT sum(revenue_table.quantity_sold), sum(revenue_table.book_revenue)
+FROM {
+  SELECT *, book.quantity_sold * book.price AS book_revenue
+  FROM book, author
+  WHERE book.ISBN = author.ISBN
+} revenue_table
+GROUP BY aname
 
 Does the sale report by genre
-SELECT sum(book.quantity_sold), sum(book.quantity_sold * book.price) AS revenue
-FROM book, genres
-GROUP BY genre
+
+SELECT sum(revenue_table.quantity_sold), sum(revenue_table.book_revenue)
+FROM {
+  SELECT book.quantity_sold * book.price AS book_revenue
+  FROM book, genre
+  WHERE book.ISBN = genre.ISBN
+} revenue_table
+GROUP BY gname;
+
 
 
 
@@ -94,8 +104,15 @@ SET money_transferred = money_transferred + 'PRICE GOES HERE'
 WHERE email_addr = 'EMAIL HERE'
 
 UPDATE book
-SET quantity_remaining = quantity_remainingd + 'PRICE GOES HERE'
+SET quantity_remaining = quantity_remaining + 'PRICE GOES HERE'
 WHERE ISBN = 'EMAIL HERE'
+
+
+DELETE FROM genre
+WHERE ISBN = 'PARAM'
+
+DELETE FROM author
+WHERE ISBN = 'PARAM'
 
 DELETE FROM book
 WHERE ISBN = 'PARAM';
