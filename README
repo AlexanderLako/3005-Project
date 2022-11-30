@@ -1,0 +1,21 @@
+Brian Yang 101140298
+Alex   *****Update
+Noah   *****Update
+
+
+Instructions to run program:
+
+  install xyz
+
+  Answer prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
+
+
+Use Cases:
+  - Querying tracking info for existing orders as a customer
+  - Creating a new user
+  - Placing an order as a registered user by adding books to the cart
+  - Search the catalogue by ISBN, genre, author, book name
+  - Checking reports (sales vs. expenditure, genre sales, author sales) as an owner
+  - Adding and removing books as an owner
+
+  Note that error checks are not implemented (ex. handling invalid inputs)
