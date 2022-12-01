@@ -1,9 +1,52 @@
 # remember in prompts, add the character number restrictions
 # ex. billing info needs to be exactly 9 characters etc.
 
-
+import psycopg2
 
 # user code
+
+SQLusername = "Alex"
+SQLpassword = "3005"
+
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+
+
+conn = None
+conn = psycopg2.connect(SQLstring)
+cur = conn.cursor()
+
+def connect():
+
+    print("Connection in progress...")
+
+    """ Connect to the PostgreSQL database server """
+    #conn = None --------------------------------------------------------------------------------------
+    # read connection parameters
+
+    # connect to the PostgreSQL server
+    print('Connecting to the PostgreSQL database...')
+    
+    
+    # create a cursor
+    
+    
+# execute a statement
+    print('PostgreSQL database version:')
+    cur.execute('SELECT version()')
+
+    # display the PostgreSQL database server version
+    db_version = cur.fetchone()
+    print(db_version)
+    disconnect()
+       
+	
+
+def disconnect():
+    # close the communication with the PostgreSQL
+    cur.close()
+    if conn is not None:
+        conn.close()
+        print('Database connection closed.')
 
 
 # ask user to login or register, then brings up cart
@@ -327,6 +370,9 @@ def remove_book():
 
 # main loop
 def main():
+
+    connect()
+
     while (True):
         print("\nEnter 1 if you are a user")
         print("Enter 2 if you are an owner")
