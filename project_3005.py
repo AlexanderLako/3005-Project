@@ -2,12 +2,11 @@
 # ex. billing info needs to be exactly 9 characters etc.
 
 import psycopg2
-#from config import config
 
 # user code
 
-SQLusername = "postgres"
-SQLpassword = "Alextobor2002"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
 SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
