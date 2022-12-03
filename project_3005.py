@@ -185,6 +185,18 @@ def query_order():
             """, (user_prompt)
     cur.execute(query)
 
+# check if user with given username exists
+def user_exists(username):
+    query = """
+            SELECT *
+            FROM store_user
+            WHERE username = %s;
+            """, (username)
+    cur.execute(query)
+    if cur.fetchone() == None:
+        return False
+    else:
+        return True
 
 def login():
     username = input("\nEnter registered username to login: ")
