@@ -117,11 +117,11 @@ create table order_contains
 
     # connect to the PostgreSQL server
     print('Connecting to the PostgreSQL database...')
-    
-    
+
+
     # create a cursor
-    
-    
+
+
 # execute a statement
     print('PostgreSQL database version:')
     cur.execute('SELECT version()')
@@ -131,8 +131,8 @@ create table order_contains
     print(db_version)
     conn.commit()
     disconnect()
-       
-	
+
+
 
 def disconnect():
     # close the communication with the PostgreSQL
@@ -178,9 +178,12 @@ def user_prompts():
 def query_order():
     user_prompt = int(input("\nEnter order number: "))
 
-    # SELECT tracking_info
-    # FROM order
-    # WHERE order_num = 'PARAM'
+    query = """
+            SELECT tracking_info
+            FROM order
+            WHERE order_num =  %s;
+            """, (user_prompt)
+    cur.execute(query)
 
 
 def login():
@@ -199,12 +202,16 @@ def register():
     #******
     print("Username already exists")
 
-    billing_info = input("\nEnter a new card number: ")
+    card = input("\nEnter a new card number: ")
 
-    shipping_info = input("\nEnter an address: ")
+    u_add = input("\nEnter an address: ")
 
-    # INSERT INTO user(username, tracking_info, billing_info)
-    # VALUES();
+    query =     """
+        INSERT INTO user(username, card_number, u_addr)
+        VALUES(%s, %s, %s);
+        """, (username, card, u_add)
+
+    cur.execute(query)
 
     return username
 
@@ -252,9 +259,13 @@ def get_book_by_ISBN(ISBN):
 
     ISBN = input("\nEnter book ISBN: ")
 
-    # SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-    # FROM book, pubisher
-    # WHERE book.ISBN = 'PARAM' AND publisher.email_addr = book.email_addr;
+    query = """
+        SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+        FROM book, publisher
+        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr;
+    """, (ISBN)
+
+    cur.execute(query)
 
     return
 
@@ -427,6 +438,9 @@ def add_book():
 
 
 
+
+def publisher_addition_prompts():
+    return
 
 # WB Publisher phone numbers?????
 
