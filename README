@@ -7,6 +7,18 @@ Instructions to run program:
 
   install xyz
 
+  First you need to install psycopg2
+  Open a terminal where the project is located
+  Type "pip install psycopg2" 
+  Note: DO NOT try to install in VScode, it will not work
+
+  Next, open pgAdmin, create a database called '3005Project'
+
+  Then, locate the project_3005.py SQLusername and SQLpassword variables located at the top of the file
+  Modify them to reflect your own username and password you used to setup postgreSQL
+  
+
+
   Answer prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
 
 
