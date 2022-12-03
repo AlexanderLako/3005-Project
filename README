@@ -3,9 +3,7 @@ Alexander Lako 101186147
 Noah   *****Update
 
 
-Instructions to run program:
-
-  install xyz
+  BEFORE YOU RUN:
 
   First you need to install psycopg2
   Open a terminal where the project is located
@@ -14,11 +12,25 @@ Instructions to run program:
 
   Next, open pgAdmin, create a database called '3005Project'
 
-  Then, locate the project_3005.py SQLusername and SQLpassword variables located at the top of the file
-  Modify them to reflect your own username and password you used to setup postgreSQL
+  There are two options in order to connect to the database;
+
+1)
+  Locate the project_3005.py SQLpassword variable located at the top of the file
+  Modify it to reflect the password you used to connect to the server
+  SQLusername should be 'postgres'
+
+2)
+  The other option, is to create a new login for that database.
+  If you want to do that, right click on Login/group roles and create a new login/group role.
+  Create a name and password for this user.
+  Give the user the necessary permissions in order to login (I recommend making them a superuser and allow login)
+  Then modify the SQLusername and SQLpassword to reflect the new user
   
 
 
+  Instructions to run program:
+
+  Run the project_3005.py script (with modifications made from above)
   Answer prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
 
 
