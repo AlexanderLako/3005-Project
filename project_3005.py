@@ -274,9 +274,13 @@ def get_book_by_name(bname):
 
     book_name = input("\nEnter book name: ")
 
-    # SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-    # FROM book, publisher
-    # WHERE book.bname = 'PARAM' AND publisher.email_addr = book.email_addr;
+    query = """
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher
+    WHERE book.bname = %s AND publisher.email_addr = book.email_addr;
+    """, (book_name)
+
+    cur.execute(query)
 
     return
 
@@ -284,9 +288,13 @@ def get_books_by_genre(genre):
 
     genre = input("\nEnter book genre: ")
 
-    # SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-    # FROM book, publisher, genre
-    # WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = 'PARAM';
+    query = """
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher, genre
+    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;
+    """, (genre)
+
+    cur.execute(query)
 
     return
 
@@ -295,9 +303,13 @@ def get_books_by_author(genre):
 
     author = input("\nEnter author name: ")
 
-    # SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
-    # FROM book, publisher, author
-    # WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = 'PARAM';
+    query = """
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
+    FROM book, publisher, author
+    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s;
+    """, (author)
+
+    cur.execute(query)
 
     return
 
