@@ -181,7 +181,11 @@ def query_order():
             FROM order
             WHERE order_num =  %s;
             """
-    cur.execute(query, user_prompt)
+    vars = (user_prompt,)
+    cur.execute(query, vars)
+
+    tracking_info = cur.fetchone()[0]
+    print("Your order's tracking information is: " + tracking_info)
 
 # check if user with given username exists
 def user_exists(username):
