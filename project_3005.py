@@ -5,14 +5,15 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
 conn = psycopg2.connect(SQLstring)
+conn.autocommit = True
 cur = conn.cursor()
 
 def connect():
@@ -21,16 +22,16 @@ def connect():
 
     commands = (
     """
-        create table store_user
+        create table if NOT exists store_user
   (
     username varchar(15),
-    tracking_info varchar(15),
-    billing_info  varchar(15),
+    u_addr varchar(15),
+    card_number  varchar(15),
     primary key (username)
   )
 """,
 """
-create table store_order
+create table if NOT exists store_order
   (
    order_num INT,
    tracking_info  varchar(15),
@@ -42,7 +43,7 @@ create table store_order
   )
 """,
 """
-create table publisher
+create table if NOT exists publisher
   (
       email_addr  varchar(15),
       pname        varchar(15),
@@ -52,7 +53,7 @@ create table publisher
   )
   """,
 """
-create table book
+create table if NOT exists book
   (
     ISBN  INT,
     quantity_remaining  INT,
@@ -67,7 +68,7 @@ create table book
   )
   """,
 """
-create table phone_number
+create table if NOT exists phone_number
   (
     email_addr  varchar(15),
     phone_number varchar(10),
@@ -76,7 +77,7 @@ create table phone_number
   )
 """,
 """
-create table genre
+create table if NOT exists genre
   (
     ISBN  INT,
     gname varchar(15),
@@ -85,7 +86,7 @@ create table genre
   )
   """,
 """
-create table author
+create table if NOT exists author
   (
     ISBN  INT,
     aname varchar(15),
@@ -94,7 +95,7 @@ create table author
   )
 """,
 """
-create table order_contains
+create table if NOT exists order_contains
   (
    order_num INT,
    ISBN      INT,
@@ -130,7 +131,7 @@ create table order_contains
     db_version = cur.fetchone()
     print(db_version)
     conn.commit()
-    disconnect()
+    # disconnect()
 
 
 
@@ -218,12 +219,10 @@ def register():
 
     u_add = input("\nEnter an address: ")
 
-    query =     """
-        INSERT INTO user(username, card_number, u_addr)
-        VALUES(%s, %s, %s);
-        """, (username, card, u_add)
+    query = "INSERT INTO store_user(username, card_number, u_addr) VALUES(%s, %s, %s);"
+    vars = (username, card, u_add)
 
-    cur.execute(query)
+    cur.execute(query, vars)
 
     return username
 
