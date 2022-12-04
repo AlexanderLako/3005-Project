@@ -147,16 +147,13 @@ def user_prompts():
 
     user_prompt = int(input("\nEnter 1 to login or 2 to register: "))
     username = ""
-    if user_prompt == 1:
-        username = login()
-    elif user_prompt == 2:
-        username = register()
-
-        # if user == False:
-            # return
-    else:
-        print("invalid input\n")
-        return
+    while (username == ""):
+        if user_prompt == 1:
+            username = login()
+        elif user_prompt == 2:
+            username = register()
+        else:
+            print("invalid input\n")
 
     while True:
         print("\nEnter 1 to query an existing order")
@@ -201,11 +198,11 @@ def user_exists(username):
 def login():
     username = input("\nEnter registered username to login: ")
 
-    # if does not exists, print error
-
-    print("Username does not exist")
-
-    return username
+    if (not user_exists(username)):
+        print("Username does not exist.")
+        return ""
+    else:
+        return username
 
 def register():
     username = input("\nEnter a new username to register: ")
