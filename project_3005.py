@@ -262,14 +262,9 @@ def user_cart(username):
 
     while (True):
 
-        # should check ISBN for valid ISBN and quantity
-
-
-
+        # should check quantity
 
         isbn = input("\nEnter ISBN: ")
-
-        quantity = input("\nEnter quantity: ")
 
         query = """
                 SELECT *
@@ -280,16 +275,18 @@ def user_cart(username):
         cur.execute(query, vars)
 
         if cur.fetchone() == None:
-            print("ISBN does not exist")
-        else:
-            order_part = (isbn, quantity)
-            cart.append(order_part)
+            print("ISBN does not exist. Please enter an existing ISBN")
+            continue
+
+        quantity = input("\nEnter quantity: ")
+        order_part = (isbn, quantity)
+        cart.append(order_part)
 
         print("\nEnter 1 to continue shopping: ")
         print("Enter 0 to checkout")
-        continue_shopping = input("Enter input here: ")
+        continue_shopping = input("\nEnter input here: ")
 
-        if (continue_shopping.isdigit() and int(continue_shopping) == 0):
+        if continue_shopping != '1':
             break
 
     checkout_cart(cart, username)
@@ -353,13 +350,32 @@ def checkout_cart(cart, username):
         cur.execute(Qorder_contains, vars)
 
 
-    # todo update quantities of all bought items
-    # update sales for those books
+    update_book_quantities(cart)
+
+
+    # todo update remaining quantities of all bought items
     # update tuples in publisher relation
 
 
 
+def update_book_quantities(cart):
 
+    quantity_index = 1
+    isbn_index = 0
+
+    for order_part in cart:
+        update_num_sold = """
+                          UPDATE book
+                          SET num_sold = %s + (
+                            SELECT num_sold
+                            FROM book
+                            WHERE ISBN = %s
+                          )
+                          WHERE ISBN = %s;
+                          """
+        vars = (order_part[quantity_index], order_part[isbn_index], order_part[isbn_index])
+
+        cur.execute(update_num_sold, vars)
 
 
 
