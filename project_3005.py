@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "noah"
+SQLpassword = "1234"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -146,9 +146,9 @@ def disconnect():
 # ask user to login or register, then brings up cart
 def user_prompts():
 
-    user_prompt = int(input("\nEnter 1 to login or 2 to register: "))
     username = ""
     while (username == ""):
+        user_prompt = int(input("\nEnter 1 to login or 2 to register: "))
         if user_prompt == 1:
             username = login()
         elif user_prompt == 2:
@@ -180,8 +180,8 @@ def query_order():
             SELECT tracking_info
             FROM order
             WHERE order_num =  %s;
-            """, (user_prompt)
-    cur.execute(query)
+            """
+    cur.execute(query, user_prompt)
 
 # check if user with given username exists
 def user_exists(username):
@@ -189,8 +189,10 @@ def user_exists(username):
             SELECT *
             FROM store_user
             WHERE username = %s;
-            """, (username)
-    cur.execute(query)
+            """ 
+    vars = (username,)
+    cur.execute(query, vars)
+
     if cur.fetchone() == None:
         return False
     else:
@@ -208,20 +210,22 @@ def login():
 def register():
     username = input("\nEnter a new username to register: ")
 
-    # if username exists, print error and return False
-    #******
-    print("Username already exists")
+    if (user_exists(username)):
+        print("Username already exists.")
+        return ""
+    else:
+        card = input("\nEnter a new card number: ")
 
-    card = input("\nEnter a new card number: ")
+        u_add = input("\nEnter an address: ")
 
-    u_add = input("\nEnter an address: ")
+        query = "INSERT INTO store_user(username, card_number, u_addr) VALUES(%s, %s, %s);"
+        vars = (username, card, u_add)
 
-    query = "INSERT INTO store_user(username, card_number, u_addr) VALUES(%s, %s, %s);"
-    vars = (username, card, u_add)
+        cur.execute(query, vars)
 
-    cur.execute(query, vars)
+        return username
 
-    return username
+
 
 
 def search_catalogue():
