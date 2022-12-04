@@ -135,14 +135,31 @@ def load_db():
 
     books = (
     """
-        INSERT INTO publisher(email_addr, pname, address, money_transferred)
-        VALUES('bruh@bro.ca', 'White House', 'Trump', 2.56);
+    INSERT INTO publisher(email_addr, pname, address, money_transferred)
+    VALUES('bruh@bro.ca', 'White House', 'Trump', 2.56)
+    ON CONFLICT (email_addr) DO NOTHING;
     """,
     """
     INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr)
-    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca');
+    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca')
+    ON CONFLICT (ISBN) DO NOTHING;
     """,
-      )
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(1, 'horror')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(1, 'kids animation')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(1, 'Mista White')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """
+  )
 
     for book in books:
         cur.execute(book,)
