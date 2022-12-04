@@ -261,7 +261,7 @@ def search_catalogue():
     # FROM genre, book
     # WHERE genre.ISBN = book.ISBN AND book.ISBN = 'PARAM';
 
-
+    print(books)
     # todo: outputs them here
 
 
@@ -296,19 +296,15 @@ def get_book_by_name(bname):
 
     return
 
-def get_books_by_genre(genre):
+def get_books_by_genre():
 
     genre = input("\nEnter book genre: ")
 
-    query = """
-    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-    FROM book, publisher, genre
-    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;
-    """, (genre)
+    query ="""SELECT book.ISBN FROM book, publisher, genre WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;"""
+    vars = (genre,)
+    cur.execute(query, vars)
 
-    cur.execute(query)
-
-    return
+    return cur.fetchone()
 
 
 def get_books_by_author(genre):
