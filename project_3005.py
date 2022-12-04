@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "noah"
-SQLpassword = "1234"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -148,10 +148,10 @@ def user_prompts():
 
     username = ""
     while (username == ""):
-        user_prompt = int(input("\nEnter 1 to login or 2 to register: "))
-        if user_prompt == 1:
+        user_prompt = input("\nEnter 1 to login or 2 to register: ")
+        if user_prompt.isdigit() and int(user_prompt) == 1:
             username = login()
-        elif user_prompt == 2:
+        elif user_prompt.isdigit() and int(user_prompt) == 2:
             username = register()
         else:
             print("invalid input\n")
@@ -162,15 +162,17 @@ def user_prompts():
         print("Enter 3 to search catalogue by keyword")
         print("Enter 4 to logout")
 
-        user_prompt = int(input("\nEnter here: "))
-        if (user_prompt == 1):
+        user_prompt = input("\nEnter here: ")
+        if (user_prompt.isdigit() and int(user_prompt) == 1):
             query_order()
-        elif user_prompt == 2:
+        elif user_prompt.isdigit() and int(user_prompt) == 2:
             user_cart(username)
-        elif user_prompt == 3:
+        elif user_prompt.isdigit() and int(user_prompt) == 3:
             search_catalogue()
-        elif user_prompt == 4:
+        elif user_prompt.isdigit() and int(user_prompt) == 4:
             return
+        else:
+            print("invalid input")
 
 # gets the location of order
 def query_order():
@@ -241,18 +243,18 @@ def search_catalogue():
     print("Enter 4 to search by author")
     print("Enter 5 to logout")
 
-    user_prompt = int(input("\nEnter selection here: "))
+    user_prompt = input("\nEnter selection here: ")
     books = []
-    if (user_prompt == 1):
+    if (user_prompt.isdigit() and int(user_prompt) == 1):
         ISBN = input("\nEnter book ISBN: ")
         books = get_book_by_ISBN(ISBN)
-    elif user_prompt == 2:
+    elif user_prompt.isdigit() and int(user_prompt) == 2:
         book_name = input("\nEnter book name: ")
         books = get_book_by_name(book_name)
-    elif user_prompt == 3:
+    elif user_prompt.isdigit() and int(user_prompt) == 3:
         genre = input("\nEnter book genre: ")
         books = get_books_by_genre(genre)
-    elif user_prompt == 4:
+    elif user_prompt.isdigit() and int(user_prompt) == 4:
         author = input("\nEnter author name: ")
         books = get_books_by_author(author)
     else:
@@ -316,7 +318,7 @@ def get_books_by_genre(genre):
 def get_books_by_author(author_name):
 
     query = """
-    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, author
     WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s;
     """
@@ -332,9 +334,9 @@ def user_cart(username):
 
     while (True):
 
-        isbn = input("\nEnter ISBN")
+        isbn = input("\nEnter ISBN: ")
 
-        quantity = input("Enter quantity")
+        quantity = input("\nEnter quantity: ")
 
         query = """
                 SELECT *
@@ -352,7 +354,7 @@ def user_cart(username):
 
         print("\nEnter 1 to continue shopping: ")
         print("Enter 0 to checkout")
-        continue_shopping = int(input(("Enter here: ")))
+        continue_shopping = int(input(("Enter input here: ")))
 
         if (continue_shopping == 0):
             break
