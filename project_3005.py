@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "noah"
-SQLpassword = "1234"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -404,16 +404,22 @@ def query_store_reports():
     owner_choice = int(input("\nEnter here: "))
 
     if owner_choice == 3:
-        query_report("author")
+        query_report_author()
     elif owner_choice == 2:
-        query_report("genre")
+        query_report_genre()
     elif owner_choice == 1:
         return
     else:
         print("invalid input")
 
 # queries reprt by keyowrd for owner
-def query_report(type):
+def query_report_genre():
+
+    return
+
+
+def query_report_author():
+    
     return
 
 
@@ -421,22 +427,20 @@ def query_report(type):
 # storeowner adding book to store
 def add_book():
     genres = []
-    genre = input("Enter genre (-1 when done): ")
-    if (genre != -1):
-        genres.append(genre)
-    while (genre != -1):
+    genre = 0
+
+    while genre != "-1":
+
         genre = input("Enter genre (-1 when done): ")
-        if (genre != -1):
-            genres.append(genre)
+        genres.append(genre)
 
     authors = []
-    author = input("Enter author (type nothing and press enter when done): ")
-    if (author != ''):
-        authors.append(genre)
-    while (author != ''):
+    author = 0
+
+    while author != "-1":
+
         author = input("Enter author (-1 when done): ")
-        if (genre != ''):
-            authors.append(genre)
+        authors.append(author)
 
     name = input("Enter book name: ")
 
@@ -444,13 +448,31 @@ def add_book():
 
     publisher = input("Enter publisher email addr: ")
 
-    com_percentage = input("Enter commission percentage: ")
+    com_percentage = 0.1
 
     pages = input("Enter the number of pages in the book: ")
+
+    price = input("Enter the price of the book: ")
 
     num_sold = 0
 
     quantity = 15
+
+    query = "INSERT INTO publisher(email_addr, pname, address, money_transferred) VALUES(%s, %s, %s,%s)"
+    vars = (publisher, "Scary Inc", "123 Scary Lane", "0")
+    cur.execute(query, vars)
+
+    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s)"
+    vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher)
+    cur.execute(query, vars)
+
+    query = "INSERT INTO author(ISBN, aname) VALUES(%s, %s)"
+    vars = (ISBN, authors)
+    cur.execute(query, vars)
+
+    query = "INSERT INTO genre(ISBN, gname) VALUES(%s, %s)"
+    vars = (ISBN, genres)
+    cur.execute(query, vars)
 
 
     # todo add book entity based on these and what im missing

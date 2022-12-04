@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
