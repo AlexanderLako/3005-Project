@@ -193,7 +193,7 @@ def user_exists(username):
             SELECT *
             FROM store_user
             WHERE username = %s;
-            """ 
+            """
     vars = (username,)
     cur.execute(query, vars)
 
@@ -304,7 +304,7 @@ def get_books_by_genre(genre):
 
     query ="""
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-    FROM book, publisher, genre 
+    FROM book, publisher, genre
     WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;
     """
     vars = (genre,)
@@ -328,21 +328,36 @@ def get_books_by_author(author_name):
 
 # prompts input for ISBN and quantity
 def user_cart(username):
-    cart[[]]
-    while (input != -1):
+    cart = []
 
-        # maybe 2 inputs instead of one
+    while (True):
 
-        # SHOULD ALSO PROMPT for searching catalogue keywords and specific book by ISBN
+        isbn = input("\nEnter ISBN")
 
-        input = input("Enter ISBN and quantity (max 10) with space seperated:")
+        quantity = input("Enter quantity")
 
-        # check for ISBN existence
+        query = """
+                SELECT *
+                FROM book
+                WHERE ISBN = %s;
+                """
+        vars = (isbn,)
+        cur.execute(query, vars)
 
-        # if ok, add ISBN and quantity to cart and maybe change it to a map?
+        if cur.fetchone() == None:
+            print("ISBN does not exist")
+        else:
+            order_part = (username, isbn, quantity)
+            cart.append(order_part)
+
+        print("\nEnter 1 to continue shopping: ")
+        print("Enter 0 to checkout")
+        continue_shopping = int(input(("Enter here: ")))
+
+        if (continue_shopping == 0):
+            break
 
     checkout_cart(cart, username)
-
 
 def checkout_cart(cart, username):
 
