@@ -244,13 +244,17 @@ def search_catalogue():
     user_prompt = int(input("\nEnter selection here: "))
     books = []
     if (user_prompt == 1):
-        books = get_book_by_ISBN()
+        ISBN = input("\nEnter book ISBN: ")
+        books = get_book_by_ISBN(ISBN)
     elif user_prompt == 2:
-        books = get_book_by_name()
+        book_name = input("\nEnter book name: ")
+        books = get_book_by_name(book_name)
     elif user_prompt == 3:
-        books = get_books_by_genre()
+        genre = input("\nEnter book genre: ")
+        books = get_books_by_genre(genre)
     elif user_prompt == 4:
-        books = get_books_by_author()
+        author = input("\nEnter author name: ")
+        books = get_books_by_author(author)
     else:
         print("\nInvalid input")
 
@@ -273,57 +277,53 @@ def search_catalogue():
 # gets the while querying
 def get_book_by_ISBN(ISBN):
 
-    ISBN = input("\nEnter book ISBN: ")
-
     query = """
         SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
         FROM book, publisher
         WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr;
-    """, (ISBN)
+    """
+    vars = (ISBN, )
+    cur.execute(query, vars)
 
-    cur.execute(query)
-
-    return
+    return cur.fetchall()
 
 # gets the while querying
 def get_book_by_name(bname):
-
-    book_name = input("\nEnter book name: ")
 
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher
     WHERE book.bname = %s AND publisher.email_addr = book.email_addr;
-    """, (book_name)
+    """
+    vars = (bname,)
+    cur.execute(query, vars)
 
-    cur.execute(query)
+    return cur.fetchall()
 
-    return
+def get_books_by_genre(genre):
 
-def get_books_by_genre():
-
-    genre = input("\nEnter book genre: ")
-
-    query ="""SELECT book.ISBN FROM book, publisher, genre WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;"""
+    query ="""
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher, genre 
+    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;
+    """
     vars = (genre,)
     cur.execute(query, vars)
 
-    return cur.fetchone()
+    return cur.fetchall()
 
 
-def get_books_by_author(genre):
-
-    author = input("\nEnter author name: ")
+def get_books_by_author(author_name):
 
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
     FROM book, publisher, author
     WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s;
-    """, (author)
+    """
+    vars = (author_name,)
+    cur.execute(query, vars)
 
-    cur.execute(query)
-
-    return
+    return cur.fetchall()
 
 
 # prompts input for ISBN and quantity
