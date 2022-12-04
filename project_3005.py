@@ -18,98 +18,6 @@ cur = conn.cursor()
 
 def connect():
 
-
-
-    commands = (
-    """
-        create table if NOT exists store_user
-  (
-    username varchar(15),
-    u_addr varchar(15),
-    card_number  varchar(15),
-    primary key (username)
-  )
-""",
-"""
-create table if NOT exists store_order
-  (
-   order_num INT,
-   tracking_info  varchar(15),
-   username       varchar(15),
-   shipping_info  varchar(15),
-   billing_info   char(15),
-   primary key (order_num),
-   foreign key (username) references store_user
-  )
-""",
-"""
-create table if NOT exists publisher
-  (
-      email_addr  varchar(15),
-      pname        varchar(15),
-      address     varchar(15),
-      money_transferred   NUMERIC(3, 2),
-      primary key (email_addr)
-  )
-  """,
-"""
-create table if NOT exists book
-  (
-    ISBN  INT,
-    quantity_remaining  INT,
-    num_sold  int,
-    pages     INT,
-    price     float,
-    bname      varchar(15),
-    com_percentage  FLOAT,
-    email_addr varchar(15) NOT NULL,
-    primary key (ISBN),
-    foreign key (email_addr) references publisher
-  )
-  """,
-"""
-create table if NOT exists phone_number
-  (
-    email_addr  varchar(15),
-    phone_number varchar(10),
-    primary key (email_addr, phone_number),
-    foreign key (email_addr) references publisher
-  )
-""",
-"""
-create table if NOT exists genre
-  (
-    ISBN  INT,
-    gname varchar(15),
-    primary key (ISBN, gname),
-    foreign key (ISBN) references book(ISBN)
-  )
-  """,
-"""
-create table if NOT exists author
-  (
-    ISBN  INT,
-    aname varchar(15),
-    primary key (ISBN, aname),
-    foreign key (ISBN) references book(ISBN)
-  )
-""",
-"""
-create table if NOT exists order_contains
-  (
-   order_num INT,
-   ISBN      INT,
-   quantity  INT,
-   primary key (ISBN, order_num),
-   foreign key (ISBN) references book(ISBN),
-   foreign key (ISBN) references store_order
-  )
-  """
-    )
-
-    for command in commands:
-            cur.execute(command)
-
     print("Connection in progress...")
 
     """ Connect to the PostgreSQL database server """
@@ -123,7 +31,7 @@ create table if NOT exists order_contains
     # create a cursor
 
 
-# execute a statement
+    # execute a statement
     print('PostgreSQL database version:')
     cur.execute('SELECT version()')
 
@@ -180,7 +88,7 @@ def query_order():
 
     query = """
             SELECT tracking_info
-            FROM order
+            FROM store_order
             WHERE order_num =  %s;
             """
     vars = (user_prompt,)
@@ -246,25 +154,25 @@ def search_catalogue():
 
     user_prompt = input("\nEnter selection here: ")
     books = []
-    if (user_prompt.isdigit() and int(user_prompt) == 1):
+    if user_prompt == '1':
         ISBN = input("\nEnter book ISBN: ")
         books = get_book_by_ISBN(ISBN)
-    elif user_prompt.isdigit() and int(user_prompt) == 2:
+    elif user_prompt == '2':
         book_name = input("\nEnter book name: ")
         books = get_book_by_name(book_name)
-    elif user_prompt.isdigit() and int(user_prompt) == 3:
+    elif user_prompt == '3':
         genre = input("\nEnter book genre: ")
         books = get_books_by_genre(genre)
-    elif user_prompt.isdigit() and int(user_prompt) == 4:
+    elif user_prompt == '4':
         author = input("\nEnter author name: ")
         books = get_books_by_author(author)
     else:
         print("\nInvalid input")
-    
+
     for book in books:
         print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
         print('{:10}{:20}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
-        
+
         # get author names
         aQuery = """
         SELECT author.aname
@@ -354,6 +262,11 @@ def user_cart(username):
 
     while (True):
 
+        # should check ISBN for valid ISBN and quantity
+
+
+
+
         isbn = input("\nEnter ISBN: ")
 
         quantity = input("\nEnter quantity: ")
@@ -369,35 +282,80 @@ def user_cart(username):
         if cur.fetchone() == None:
             print("ISBN does not exist")
         else:
-            order_part = (username, isbn, quantity)
+            order_part = (isbn, quantity)
             cart.append(order_part)
 
         print("\nEnter 1 to continue shopping: ")
         print("Enter 0 to checkout")
-        continue_shopping = int(input(("Enter input here: ")))
+        continue_shopping = input("Enter input here: ")
 
-        if (continue_shopping == 0):
+        if (continue_shopping.isdigit() and int(continue_shopping) == 0):
             break
 
     checkout_cart(cart, username)
 
 def checkout_cart(cart, username):
 
-    addr = input("Enter addr for the order or -1 to use existing addr: ")
+    addr = input("Enter addr for the order or 1 to use existing addr: ")
 
-    if addr == -1:
-        return   # todo get cart here
+    if addr == '1':
+        U_addr_query = """
+                        SELECT u_addr
+                        FROM store_user
+                        WHERE username = %s;
+                        """
 
-    card_num = input("Enter card num for the order or -1 to use existing addr: ")
+        vars = (username,)
+        cur.execute(U_addr_query, vars)
+        addr = cur.fetchone()
 
-    if card_num == -1:
-        return   # todo get card-num here
+    card_num = input("Enter card num for the order or 1 to use existing addr: ")
+
+    if card_num == '1':
+        U_card_query = """
+                        SELECT card_number
+                        FROM store_user
+                        WHERE username = %s;
+                        """
+
+        vars = (username,)
+        cur.execute(U_card_query, vars)
+        card_num = cur.fetchone()
+
+
+    new_order = """
+                INSERT INTO store_order(tracking_info, username, shipping_info, billing_info)
+                VALUES(%s, %s, %s, %s);
+                """
+
+    vars = ('Alabama', username, addr, card_num)
+    cur.execute(new_order, vars)
+
+    Qorder_num = """
+                 SELECT max(order_num)
+                 FROM store_order;
+                 """
+
+    cur.execute(Qorder_num,)
+
+    order_num = cur.fetchone()[0]
+
+    ISBN_INDEX = 0
+    QUANTITY_INDEX = 1
+
+    for order_part in cart:
+        Qorder_contains = """
+                          INSERT INTO order_contains(ISBN, quantity, order_num)
+                          VALUES(%s, %s, %s)
+                          """
+        vars = (order_part[ISBN_INDEX], order_part[QUANTITY_INDEX], order_num)
+
+        cur.execute(Qorder_contains, vars)
+
 
     # todo update quantities of all bought items
     # update sales for those books
     # update tuples in publisher relation
-    # add new order tuple to the order relation
-    # add tuples (order_num, book) to order_contains relation
 
 
 
@@ -544,14 +502,15 @@ def main():
     while (True):
         print("\nEnter 1 if you are a user")
         print("Enter 2 if you are an owner")
-        print("Enter 3 if you wish to exit")
-        user_type = int(input("\nEnter selection here: "))
-        if user_type == 2:
+        print("Enter 0 if you wish to exit")
+        user_type = input("\nEnter selection here: ")
+        if user_type == '2':
             owner_prompts()
-        elif user_type == 1:
+        elif user_type == '1':
             user_prompts()
-        elif user_type == 3:
+        elif user_type == '0':
             break
+    disconnect()
 
 
 

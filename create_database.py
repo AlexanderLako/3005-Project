@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "noah"
-SQLpassword = "1234"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -30,7 +30,7 @@ def connect():
   """
   create table if NOT exists store_order
     (
-     order_num INT,
+     order_num SERIAL,
      tracking_info  varchar(15),
      username       varchar(15),
      shipping_info  varchar(15),
