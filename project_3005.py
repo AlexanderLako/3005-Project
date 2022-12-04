@@ -446,7 +446,7 @@ def add_book():
 
     ISBN = input("Enter ISBN: ")
 
-    publisher = input("Enter publisher email addr: ")
+    publisher = input("Enter publisher email addr: ") #PUBLISHER MUST ALREADY EXIST
 
     com_percentage = 0.1
 
@@ -458,21 +458,23 @@ def add_book():
 
     quantity = 15
 
-    query = "INSERT INTO publisher(email_addr, pname, address, money_transferred) VALUES(%s, %s, %s,%s)"
-    vars = (publisher, "Scary Inc", "123 Scary Lane", "0")
-    cur.execute(query, vars)
-
-    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s)"
+    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s) ON CONFLICT (ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) DO NOTHING;"
     vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher)
     cur.execute(query, vars)
 
-    query = "INSERT INTO author(ISBN, aname) VALUES(%s, %s)"
-    vars = (ISBN, authors)
-    cur.execute(query, vars)
+    i = 0
+    while i < len(authors):
+        query = "INSERT INTO author(ISBN, aname) VALUES(%s, %s) ON CONFLICT (ISBN, aname) DO NOTHING;"
+        vars = (ISBN, authors[i])
+        cur.execute(query, vars)
+        i+=1
 
-    query = "INSERT INTO genre(ISBN, gname) VALUES(%s, %s)"
-    vars = (ISBN, genres)
-    cur.execute(query, vars)
+    j = 0
+    while j < len(genres):
+        query = "INSERT INTO genre(ISBN, gname) VALUES(%s, %s) ON CONFLICT (ISBN, gname) DO NOTHING;"
+        vars = (ISBN, genres[j])
+        cur.execute(query, vars)
+        j+=1
 
 
     # todo add book entity based on these and what im missing
@@ -536,6 +538,7 @@ def main():
         elif user_type == 1:
             user_prompts()
         elif user_type == 3:
+            disconnect()
             break
 
 
