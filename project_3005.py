@@ -259,20 +259,39 @@ def search_catalogue():
         books = get_books_by_author(author)
     else:
         print("\nInvalid input")
+    
+    for book in books:
+        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
+        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
+        
+        # get author names
+        aQuery = """
+        SELECT author.aname
+        FROM author, book
+        WHERE author.ISBN = book.ISBN AND book.ISBN = %s;
+        """
+        vars = (book[0], )
+        cur.execute(aQuery, vars)
+        authors = cur.fetchall()
+
+        print("Authors:")
+        for author in authors:
+            print(str(author[0]))
 
 
-    # Gets the authors of a book
-    # SELECT author.aname
-    # FROM author, book
-    # WHERE author.ISBN = book.ISBN AND book.ISBN = 'PARAM';
-    #
-    # Gets the genres of a book
-    # SELECT genre.gname
-    # FROM genre, book
-    # WHERE genre.ISBN = book.ISBN AND book.ISBN = 'PARAM';
+        # get genres
+        gQuery = """
+        SELECT genre.gname
+        FROM genre, book
+        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s;
+        """
+        cur.execute(gQuery, vars)
+        genres = cur.fetchall()
 
-    print(books)
-    # todo: outputs them here
+        print("Genres:")
+        for genre in genres:
+            print(str(genre[0]))
+        print("\n")
 
 
 
