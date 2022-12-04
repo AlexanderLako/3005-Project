@@ -233,7 +233,8 @@ def register():
 
 
 
-
+#to do: add print all books functionality
+# do checks to make sure books are available
 def search_catalogue():
 
 
