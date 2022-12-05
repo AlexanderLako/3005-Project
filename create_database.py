@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -45,7 +45,7 @@ create table if NOT exists publisher
       email_addr  varchar(15),
       pname        varchar(15),
       address     varchar(15),
-      money_transferred   NUMERIC(3, 2),
+      money_transfered   NUMERIC(3, 2),
       primary key (email_addr)
   );
   """,
@@ -196,6 +196,10 @@ def load_db():
 
     for book in books:
         cur.execute(book,)
+
+    query = "INSERT INTO publisher(email_addr, pname, address, money_transfered) VALUES(%s, %s, %s,%s)"
+    vars = ("scary@gmail.com", "Scary Inc", "123 Scary Lane", "0")
+    cur.execute(query, vars)
 
 connect()
 load_db()
