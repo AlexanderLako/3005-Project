@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "noah"
+SQLpassword = "1234"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -94,7 +94,12 @@ def query_order():
     vars = (user_prompt,)
     cur.execute(query, vars)
 
-    tracking_info = cur.fetchone()[0]
+    check = cur.fetchone()
+    if (check == None):
+        print("Order does not exist.")
+        return
+
+    tracking_info = check[0]
     print("Your order's tracking information is: " + tracking_info)
 
 # check if user with given username exists
