@@ -1,71 +1,73 @@
-
+/*Retrieves user with given username from store_user*/
 SELECT *
 FROM store_user
 WHERE username = %s;
 
-
+/*Gets the tracking info from an order with the given order_num from store_order*/
 SELECT tracking_info
 FROM store_order
 WHERE order_num =  %s;
 
+/*Gets all the authors (their names) of a book with the given ISBN from the author relation*/
 SELECT author.aname
 FROM author, book
 WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
 
+/*Gets all the genres of a book with the given ISBN from the genre relation*/
 SELECT genre.gname
 FROM genre, book
 WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
 
-
+/*Gets a book with the given ISBN and its publisher's name*/
 SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
 FROM book, publisher
 WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
 
-
+/*Gets books with the given name and their publisher's names*/
 SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
 FROM book, publisher
 WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
 
-
+/*Gets books with the given genre and their publisher's names*/
 SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
 FROM book, publisher, genre
 WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = 'true';
 
-
+/*Gets books with the given author name and its publisher's names*/
 SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
 FROM book, publisher, author
 WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = 'true';
 
-
+/*Gets all available books from the book relation along with their publisher's name*/
 SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
 FROM book, publisher
 WHERE publisher.email_addr = book.email_addr AND book.available = 'true';
 
-
+/**/
 SELECT quantity_remaining
 FROM book
 WHERE ISBN = %s;
 
-
+/**/
 SELECT max(order_num)
 FROM store_order;
 
-
+/**/
 SELECT u_addr
 FROM store_user
 WHERE username = %s;
 
-
+/**/
 SELECT card_number
 FROM store_user
 WHERE username = %s;
 
-
+/**/
 SELECT *
 FROM publisher
 WHERE email_addr =  %s;
 
-
+/**/
 SELECT *
 FROM book
 WHERE ISBN = %s;
