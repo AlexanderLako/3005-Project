@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -68,7 +68,7 @@ def user_prompts():
         print("\nEnter 1 to query an existing order")
         print("Enter 2 to make a purchase")
         print("Enter 3 to search catalogue by keyword")
-        print("Enter 4 to logout")
+        print("Enter 4 to return to main menu")
 
         user_prompt = input("\nEnter here: ")
         if (user_prompt.isdigit() and int(user_prompt) == 1):
@@ -280,15 +280,7 @@ def user_cart(username):
 
         isbn = input("\nEnter ISBN: ")
 
-        query = """
-                SELECT *
-                FROM book
-                WHERE ISBN = %s;
-                """
-        vars = (isbn,)
-        cur.execute(query, vars)
-
-        if cur.fetchone() == None:
+        if not check_ISBN_exists(isbn):
             print("ISBN does not exist. Please enter an existing ISBN")
             continue
 
@@ -305,6 +297,7 @@ def user_cart(username):
                  FROM book
                  WHERE ISBN = %s;
                  """
+        vars = (isbn,)
         cur.execute(Qquery, vars)
         q_in_stock = cur.fetchone()[0]
 
@@ -343,16 +336,7 @@ def checkout_cart(cart, username):
 
     #for each item in the cart first try to get the ISBN
     for order_part in cart:
-        query = """
-                SELECT *
-                FROM book
-                WHERE ISBN = %s;
-                """
-        vars = (order_part[ISBN_INDEX],)
-        cur.execute(query, vars)
-
-        #if the ISBN does not exist in the cart
-        if cur.fetchone() == None:
+        if not check_ISBN_exists(order_part[ISBN_INDEX]):
             Qorder_contains = """
                               INSERT INTO order_contains(ISBN, quantity, order_num)
                               VALUES(%s, %s, %s)
@@ -471,17 +455,21 @@ def owner_prompts():
     print("\nEnter 1 to add a book to the store")
     print("Enter 2 to remove a book from the store")
     print("Enter 3 to query reports from the store")
+    print("Enter 0 to return to main menu")
 
-    owner_choice = int(input("\nEnter here: "))
+    owner_choice = input("\nEnter here: ")
 
-    if owner_choice == 3:
-        query_store_reports()
-    elif owner_choice == 2:
-        remove_book()
-    elif owner_choice == 1:
-        add_book()
-    else:
-        print("invalid input")
+    while(True):
+        if owner_choice == '3':
+            query_store_reports()
+        elif owner_choice == '2':
+            remove_book()
+        elif owner_choice == '1':
+            add_book()
+        elif owner_choice == '0':
+            break
+        else:
+            print("invalid input")
 
 
 #Asks the owner which reports they want to see
@@ -511,7 +499,7 @@ def query_report_genre():
 
 
 def query_report_author():
-    
+
     return
 
 
@@ -559,8 +547,8 @@ def add_book():
     num_sold = 0
     quantity = 15
 
-    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s)"
-    vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher)
+    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available) VALUES(%s, %s, %s,%s, %s, %s,%s, %s, %s)"
+    vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher, 'true')
     cur.execute(query, vars)
 
     #insert each author and genre into their respected tables
@@ -610,20 +598,43 @@ def update_publisher(addr):
 
 
 
-# this removes the book from the store
+# this "removes" the book from the store
+# by setting the book's available attribute to 'false'
 def remove_book():
 
-    ISBN = input("Enter ISBN of book to remove it from store: ")
+    ISBN = input("\nEnter ISBN of book to remove it from store: ")
+
+    if not check_ISBN_exists(ISBN):
+        print("\nISBN does not exist, removal failure")
+        return
+
+    Qupdate_avail = """
+                    UPDATE book
+                    SET available = 'false'
+                    WHERE ISBN = %s;
+                    """
+    vars = (ISBN,)
+
+    cur.execute(Qupdate_avail, vars)
+
+    print("\nBook " + ISBN + " is now removed from the catalogue")
 
 
-    # if ISBN does not exist print error, otherwise remove
+# Checks to see whether the ISBN exists
+# by checking to see whether any tuples are returned
+def check_ISBN_exists(isbn):
+        query = """
+                SELECT *
+                FROM book
+                WHERE ISBN = %s;
+                """
+        vars = (isbn,)
+        cur.execute(query, vars)
 
+        if cur.fetchone() == None:
+            return False
 
-    print("ISBN does not exist, removal failure")
-
-
-
-
+        return True
 
 
 # main loop
@@ -643,7 +654,7 @@ def main():
         elif user_type == '0':
             disconnect()
             break
-    
+
 
 
 
