@@ -289,12 +289,14 @@ def user_cart(username):
 
     while (True):
 
+        #get ISBN
         isbn = input("\nEnter ISBN: ")
 
         if not check_ISBN_exists(isbn):
             print("ISBN does not exist. Please enter an existing ISBN")
             continue
 
+        #enter the quantity of books you want to buy
         quantity = input("\nEnter quantity: ")
         if not quantity.isdigit():
             continue
@@ -312,6 +314,7 @@ def user_cart(username):
         cur.execute(Qquery, vars)
         q_in_stock = cur.fetchone()[0]
 
+        #check if enough books are available to purchase
         if (quantity_in_cart + int(quantity)) > q_in_stock:
             print("Not enough of book #" + isbn + " in stock to add to cart")
             continue
