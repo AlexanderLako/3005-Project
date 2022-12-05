@@ -566,12 +566,6 @@ def add_book():
 
 
 
-def publisher_addition_prompts():
-    return
-
-# WB Publisher phone numbers?????
-
-
 def update_publisher(addr):
 
     pname = input("Please enter publisher name: ")
@@ -582,6 +576,17 @@ def update_publisher(addr):
     vars = (addr, pname, address, money_transfered)
     cur.execute(query, vars)
 
+    phoneNumbers = []
+    numbers = 0
+
+    while numbers != "-1" or len(phoneNumbers) == 0:
+        numbers = input("Enter publisher phone number (-1 when done): ")
+
+    while i < len(phoneNumbers):
+        query = "INSERT INTO phone_number(email_addr, phone_number) VALUES(%s, %s) ON CONFLICT (email_addr, phone_number) DO NOTHING;"
+        vars = (addr, phoneNumbers[i])
+        cur.execute(query, vars)
+        i+=1
 
     return addr
 
