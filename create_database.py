@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -136,7 +136,7 @@ def load_db():
 
     books = (
     """
-    INSERT INTO publisher(email_addr, pname, address, money_transferred)
+    INSERT INTO publisher(email_addr, pname, address, money_transfered)
     VALUES('bruh@bro.ca', 'White House', 'Trump', 0)
     ON CONFLICT (email_addr) DO NOTHING;
     """,
@@ -163,7 +163,7 @@ def load_db():
 
 
     """
-    INSERT INTO publisher(email_addr, pname, address, money_transferred)
+    INSERT INTO publisher(email_addr, pname, address, money_transfered)
     VALUES('ye@gmail.com', 'Kanye', 'Kim Ks', 0)
     ON CONFLICT (email_addr) DO NOTHING;
     """,
