@@ -60,6 +60,7 @@ create table if NOT exists book
     bname      varchar(15),
     com_percentage  FLOAT,
     email_addr varchar(15) NOT NULL,
+    available  varchar(15),
     primary key (ISBN),
     foreign key (email_addr) references publisher
   );

@@ -262,8 +262,6 @@ def user_cart(username):
 
     while (True):
 
-        # should check quantity
-
         isbn = input("\nEnter ISBN: ")
 
         query = """
@@ -295,6 +293,7 @@ def user_cart(username):
         q_in_stock = cur.fetchone()[0]
 
         if (quantity_in_cart + int(quantity)) > q_in_stock:
+            print("Not enough of book #" + isbn + " in stock to add to cart")
             continue
 
         order_part = (isbn, quantity)
@@ -370,8 +369,6 @@ def checkout_cart(cart, username):
 
     update_book_quantities(cart)
 
-
-    # todo update remaining quantities of all bought items
     # update tuples in publisher relation
 
 
@@ -398,18 +395,22 @@ def update_book_quantities(cart):
         update_quantity_remain = """
                                 UPDATE book
                                 SET quantity_remaining =  (
-                                SELECT quantity_remaining
-                                FROM book
-                                WHERE ISBN = %s
-                                ) - %s
+                                    SELECT quantity_remaining
+                                    FROM book
+                                    WHERE ISBN = %s
+                                    ) - %s
                                 WHERE ISBN = %s;
                                 """
         vars = (order_part[isbn_index], order_part[quantity_index], order_part[isbn_index])
 
         cur.execute(update_quantity_remain, vars)
 
-
-
+    restock = """
+              UPDATE book
+              SET quantity_remaining = 20 + quantity_remaining
+              WHERE quantity_remaining < 10;
+              """
+    cur.execute(restock)
 
 
 
