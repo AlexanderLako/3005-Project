@@ -245,7 +245,7 @@ def get_books_by_genre(genre):
 
     return cur.fetchall()
 
-
+#get the books by author name
 def get_books_by_author(author_name):
 
     query = """
@@ -258,6 +258,7 @@ def get_books_by_author(author_name):
 
     return cur.fetchall()
 
+#get all available books that are marked true
 def get_all_available_books():
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
@@ -323,6 +324,7 @@ def user_cart(username):
 
     checkout_cart(cart, username)
 
+#checkout with the items in the users cart
 def checkout_cart(cart, username):
 
     create_order(username)
@@ -339,6 +341,7 @@ def checkout_cart(cart, username):
     ISBN_INDEX = 0
     QUANTITY_INDEX = 1
 
+    #for each item in the cart first try to get the ISBN
     for order_part in cart:
         query = """
                 SELECT *
@@ -348,6 +351,7 @@ def checkout_cart(cart, username):
         vars = (order_part[ISBN_INDEX],)
         cur.execute(query, vars)
 
+        #if the ISBN does not exist in the cart
         if cur.fetchone() == None:
             Qorder_contains = """
                               INSERT INTO order_contains(ISBN, quantity, order_num)
@@ -357,6 +361,7 @@ def checkout_cart(cart, username):
 
             cur.execute(Qorder_contains, vars)
 
+        #update the order with a order number and the ISBN
         else:
             Qorder_contains = """
                               UPDATE order_contains
@@ -372,9 +377,11 @@ def checkout_cart(cart, username):
 
     # update tuples in publisher relation
 
+#Create an order for a user
 def create_order(username):
     addr = input("Enter addr for the order or 1 to use existing addr: ")
 
+    #if the user enters '1', get their existing address
     if addr == '1':
         U_addr_query = """
                         SELECT u_addr
@@ -386,8 +393,9 @@ def create_order(username):
         cur.execute(U_addr_query, vars)
         addr = cur.fetchone()
 
-    card_num = input("Enter card num for the order or 1 to use existing addr: ")
+    card_num = input("Enter card num for the order or 1 to use existing card: ")
 
+    #if the user enters '1', get their existing card number
     if card_num == '1':
         U_card_query = """
                         SELECT card_number
@@ -399,7 +407,7 @@ def create_order(username):
         cur.execute(U_card_query, vars)
         card_num = cur.fetchone()
 
-
+    #create a new store order with provided information
     new_order = """
                 INSERT INTO store_order(tracking_info, username, shipping_info, billing_info)
                 VALUES(%s, %s, %s, %s);
@@ -408,11 +416,13 @@ def create_order(username):
     vars = ('Alabama', username, addr, card_num)
     cur.execute(new_order, vars)
 
+#update the book quantities based on what the user ordered
 def update_book_quantities(cart):
 
     quantity_index = 1
     isbn_index = 0
 
+    #update the number of books sold for that specific book using ISBN
     for order_part in cart:
         update_num_sold = """
                           UPDATE book
@@ -427,6 +437,7 @@ def update_book_quantities(cart):
 
         cur.execute(update_num_sold, vars)
 
+        #update the quantity remaining of a book using ISBN
         update_quantity_remain = """
                                 UPDATE book
                                 SET quantity_remaining =  (
@@ -440,6 +451,7 @@ def update_book_quantities(cart):
 
         cur.execute(update_quantity_remain, vars)
 
+    #if quantity remaining is below 10, restock that book
     restock = """
               UPDATE book
               SET quantity_remaining = 20 + quantity_remaining
@@ -453,7 +465,7 @@ def update_book_quantities(cart):
 
 
 
-# prompts for the owner
+# prompts for the owner to add or remove book and get reports
 def owner_prompts():
 
     print("\nEnter 1 to add a book to the store")
@@ -472,6 +484,7 @@ def owner_prompts():
         print("invalid input")
 
 
+#Asks the owner which reports they want to see
 def query_store_reports():
     report_type = []
     # todo print query options
@@ -508,6 +521,7 @@ def add_book():
     genres = []
     genre = 0
 
+    #allow user to enter multiple genres
     while genre != "-1" or len(genres) == 0:
 
         genre = input("Enter genre (-1 when done): ")
@@ -516,6 +530,7 @@ def add_book():
     authors = []
     author = 0
 
+    #allow user to enter multiple authors
     while author != "-1" or len(authors) == 0:
 
         author = input("Enter author (-1 when done): ")
@@ -533,6 +548,7 @@ def add_book():
     vars = (publisher,)
     cur.execute(query, vars)
 
+    #check to see if publisher email address already exists, if not create a new publisher with that email
     if cur.fetchone() == None:
         print("The publisher does not exist, please enter their information")
         update_publisher(publisher)
@@ -547,6 +563,7 @@ def add_book():
     vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher)
     cur.execute(query, vars)
 
+    #insert each author and genre into their respected tables
     i = 0
     while i < len(authors):
         query = "INSERT INTO author(ISBN, aname) VALUES(%s, %s) ON CONFLICT (ISBN, aname) DO NOTHING;"
@@ -565,7 +582,7 @@ def add_book():
 
 
 
-
+#Update the publisher and their phone numbers
 def update_publisher(addr):
 
     pname = input("Please enter publisher name: ")
@@ -579,6 +596,7 @@ def update_publisher(addr):
     phoneNumbers = []
     numbers = 0
 
+    #let owner enter phone numbers and insert them into the table
     while numbers != "-1" or len(phoneNumbers) == 0:
         numbers = input("Enter publisher phone number (-1 when done): ")
 
