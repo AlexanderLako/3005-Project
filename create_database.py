@@ -30,7 +30,7 @@ def connect():
   """
   create table if NOT exists store_order
     (
-     order_num INT,
+     order_num SERIAL,
      tracking_info  varchar(15),
      username       varchar(15),
      shipping_info  varchar(15),
@@ -60,6 +60,7 @@ create table if NOT exists book
     bname      varchar(15),
     com_percentage  FLOAT,
     email_addr varchar(15) NOT NULL,
+    available  varchar(15),
     primary key (ISBN),
     foreign key (email_addr) references publisher
   );
@@ -135,14 +136,63 @@ def load_db():
 
     books = (
     """
-        INSERT INTO publisher(email_addr, pname, address, money_transfered)
-        VALUES('bruh@bro.ca', 'White House', 'Trump', 2.56);
+    INSERT INTO publisher(email_addr, pname, address, money_transferred)
+    VALUES('bruh@bro.ca', 'White House', 'Trump', 0)
+    ON CONFLICT (email_addr) DO NOTHING;
     """,
     """
-    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr)
-    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca');
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca', 'true')
+    ON CONFLICT (ISBN) DO NOTHING;
     """,
-      )
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(1, 'horror')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(1, 'kids animation')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(1, 'Mista White')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """,
+
+
+    """
+    INSERT INTO publisher(email_addr, pname, address, money_transferred)
+    VALUES('ye@gmail.com', 'Kanye', 'Kim Ks', 0)
+    ON CONFLICT (email_addr) DO NOTHING;
+    """,
+    """
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(2, 15, 0, 420, 69, 'V Sauce Michael', 0.25, 'ye@gmail.com', 'true')
+    ON CONFLICT (ISBN) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(2, 'action')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(2, 'anime')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(2, 'horror')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(2, 'Kanye')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """
+  )
 
     for book in books:
         cur.execute(book,)

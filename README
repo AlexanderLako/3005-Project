@@ -1,13 +1,15 @@
+COMP3005 Final Project
+
 Brian Yang 101140298
 Alexander Lako 101186147
 Noah Wilson 101188716
 
 
-  BEFORE YOU RUN:
+  BEFORE YOU RUN (having python is required):
 
-  First you need to install psycopg2
+  First you need to install and psycopg2
   Open a terminal where the project is located
-  Type "pip install psycopg2" 
+  Type "pip install psycopg2"
   Note: DO NOT try to install in VScode, it will not work
 
   Next, open pgAdmin, create a database called '3005Project'
@@ -25,13 +27,18 @@ Noah Wilson 101188716
   Create a name and password for this user.
   Give the user the necessary permissions in order to login (I recommend making them a superuser and allow login)
   Then modify the SQLusername and SQLpassword to reflect the new user
-  
 
 
-  Instructions to run program:
 
-  Run the project_3005.py script (with modifications made from above)
-  Answer prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
+
+Instructions to run program:
+
+  1) Create the database using the command "Python3 create_database.py" in the terminal
+     which runs the script to create the database and inserts some tuples
+
+  2) Run the application script using the commmand "Python3 application.py" in the terminal
+
+  3) Answer the prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
 
 
 Use Cases:

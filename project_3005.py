@@ -18,98 +18,6 @@ cur = conn.cursor()
 
 def connect():
 
-
-
-    commands = (
-    """
-        create table if NOT exists store_user
-  (
-    username varchar(15),
-    u_addr varchar(15),
-    card_number  varchar(15),
-    primary key (username)
-  )
-""",
-"""
-create table if NOT exists store_order
-  (
-   order_num INT,
-   tracking_info  varchar(15),
-   username       varchar(15),
-   shipping_info  varchar(15),
-   billing_info   char(15),
-   primary key (order_num),
-   foreign key (username) references store_user
-  )
-""",
-"""
-create table if NOT exists publisher
-  (
-      email_addr  varchar(15),
-      pname        varchar(15),
-      address     varchar(15),
-      money_transferred   NUMERIC(3, 2),
-      primary key (email_addr)
-  )
-  """,
-"""
-create table if NOT exists book
-  (
-    ISBN  INT,
-    quantity_remaining  INT,
-    num_sold  int,
-    pages     INT,
-    price     float,
-    bname      varchar(15),
-    com_percentage  FLOAT,
-    email_addr varchar(15) NOT NULL,
-    primary key (ISBN),
-    foreign key (email_addr) references publisher
-  )
-  """,
-"""
-create table if NOT exists phone_number
-  (
-    email_addr  varchar(15),
-    phone_number varchar(10),
-    primary key (email_addr, phone_number),
-    foreign key (email_addr) references publisher
-  )
-""",
-"""
-create table if NOT exists genre
-  (
-    ISBN  INT,
-    gname varchar(15),
-    primary key (ISBN, gname),
-    foreign key (ISBN) references book(ISBN)
-  )
-  """,
-"""
-create table if NOT exists author
-  (
-    ISBN  INT,
-    aname varchar(15),
-    primary key (ISBN, aname),
-    foreign key (ISBN) references book(ISBN)
-  )
-""",
-"""
-create table if NOT exists order_contains
-  (
-   order_num INT,
-   ISBN      INT,
-   quantity  INT,
-   primary key (ISBN, order_num),
-   foreign key (ISBN) references book(ISBN),
-   foreign key (ISBN) references store_order
-  )
-  """
-    )
-
-    for command in commands:
-            cur.execute(command)
-
     print("Connection in progress...")
 
     """ Connect to the PostgreSQL database server """
@@ -123,7 +31,7 @@ create table if NOT exists order_contains
     # create a cursor
 
 
-# execute a statement
+    # execute a statement
     print('PostgreSQL database version:')
     cur.execute('SELECT version()')
 
@@ -148,10 +56,10 @@ def user_prompts():
 
     username = ""
     while (username == ""):
-        user_prompt = int(input("\nEnter 1 to login or 2 to register: "))
-        if user_prompt == 1:
+        user_prompt = input("\nEnter 1 to login or 2 to register: ")
+        if user_prompt.isdigit() and int(user_prompt) == 1:
             username = login()
-        elif user_prompt == 2:
+        elif user_prompt.isdigit() and int(user_prompt) == 2:
             username = register()
         else:
             print("invalid input\n")
@@ -162,15 +70,17 @@ def user_prompts():
         print("Enter 3 to search catalogue by keyword")
         print("Enter 4 to logout")
 
-        user_prompt = int(input("\nEnter here: "))
-        if (user_prompt == 1):
+        user_prompt = input("\nEnter here: ")
+        if (user_prompt.isdigit() and int(user_prompt) == 1):
             query_order()
-        elif user_prompt == 2:
+        elif user_prompt.isdigit() and int(user_prompt) == 2:
             user_cart(username)
-        elif user_prompt == 3:
+        elif user_prompt.isdigit() and int(user_prompt) == 3:
             search_catalogue()
-        elif user_prompt == 4:
+        elif user_prompt.isdigit() and int(user_prompt) == 4:
             return
+        else:
+            print("invalid input")
 
 # gets the location of order
 def query_order():
@@ -178,7 +88,7 @@ def query_order():
 
     query = """
             SELECT tracking_info
-            FROM order
+            FROM store_order
             WHERE order_num =  %s;
             """
     vars = (user_prompt,)
@@ -193,7 +103,7 @@ def user_exists(username):
             SELECT *
             FROM store_user
             WHERE username = %s;
-            """ 
+            """
     vars = (username,)
     cur.execute(query, vars)
 
@@ -230,8 +140,6 @@ def register():
         return username
 
 
-
-
 def search_catalogue():
 
 
@@ -239,134 +147,305 @@ def search_catalogue():
     print("Enter 2 to search by book name")
     print("Enter 3 to search by genre")
     print("Enter 4 to search by author")
-    print("Enter 5 to logout")
+    print("Enter 5 to see all available books")
+    print("Enter 6 to go back")
 
-    user_prompt = int(input("\nEnter selection here: "))
+    user_prompt = input("\nEnter selection here: ")
     books = []
-    if (user_prompt == 1):
-        books = get_book_by_ISBN()
-    elif user_prompt == 2:
-        books = get_book_by_name()
-    elif user_prompt == 3:
-        books = get_books_by_genre()
-    elif user_prompt == 4:
-        books = get_books_by_author()
+    if user_prompt == '1':
+        ISBN = input("\nEnter book ISBN: ")
+        books = get_book_by_ISBN(ISBN)
+    elif user_prompt == '2':
+        book_name = input("\nEnter book name: ")
+        books = get_book_by_name(book_name)
+    elif user_prompt == '3':
+        genre = input("\nEnter book genre: ")
+        books = get_books_by_genre(genre)
+    elif user_prompt == '4':
+        author = input("\nEnter author name: ")
+        books = get_books_by_author(author)
+    elif user_prompt == '5':
+        books = get_all_available_books()
+    elif user_prompt == '6':
+        return
     else:
         print("\nInvalid input")
+        return
+
+    for book in books:
+        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
+        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
+
+        # get author names
+        aQuery = """
+        SELECT author.aname
+        FROM author, book
+        WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
+        """
+        vars = (book[0], )
+        cur.execute(aQuery, vars)
+        authors = cur.fetchall()
+
+        print("Authors:")
+        for author in authors:
+            print(str(author[0]))
 
 
-    # Gets the authors of a book
-    # SELECT author.aname
-    # FROM author, book
-    # WHERE author.ISBN = book.ISBN AND book.ISBN = 'PARAM';
-    #
-    # Gets the genres of a book
-    # SELECT genre.gname
-    # FROM genre, book
-    # WHERE genre.ISBN = book.ISBN AND book.ISBN = 'PARAM';
+        # get genres
+        gQuery = """
+        SELECT genre.gname
+        FROM genre, book
+        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
+        """
+        cur.execute(gQuery, vars)
+        genres = cur.fetchall()
 
-    print(books)
-    # todo: outputs them here
+        print("Genres:")
+        for genre in genres:
+            print(str(genre[0]))
+        print("\n")
 
 
 
 # gets the while querying
 def get_book_by_ISBN(ISBN):
 
-    ISBN = input("\nEnter book ISBN: ")
-
     query = """
         SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
         FROM book, publisher
-        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr;
-    """, (ISBN)
+        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
+    """
+    vars = (ISBN, )
+    cur.execute(query, vars)
 
-    cur.execute(query)
-
-    return
+    return cur.fetchall()
 
 # gets the while querying
 def get_book_by_name(bname):
 
-    book_name = input("\nEnter book name: ")
-
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher
-    WHERE book.bname = %s AND publisher.email_addr = book.email_addr;
-    """, (book_name)
+    WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
+    """
+    vars = (bname,)
+    cur.execute(query, vars)
 
-    cur.execute(query)
+    return cur.fetchall()
 
-    return
+def get_books_by_genre(genre):
 
-def get_books_by_genre():
-
-    genre = input("\nEnter book genre: ")
-
-    query ="""SELECT book.ISBN FROM book, publisher, genre WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;"""
+    query ="""
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher, genre
+    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = 'true';
+    """
     vars = (genre,)
     cur.execute(query, vars)
 
-    return cur.fetchone()
+    return cur.fetchall()
 
 
-def get_books_by_author(genre):
-
-    author = input("\nEnter author name: ")
+def get_books_by_author(author_name):
 
     query = """
-    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, author
-    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s;
-    """, (author)
+    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = 'true';
+    """
+    vars = (author_name,)
+    cur.execute(query, vars)
 
+    return cur.fetchall()
+
+def get_all_available_books():
+    query = """
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher
+    WHERE publisher.email_addr = book.email_addr AND book.available = 'true';
+    """
     cur.execute(query)
 
-    return
+    return cur.fetchall()
+
+
 
 
 # prompts input for ISBN and quantity
 def user_cart(username):
-    cart[[]]
-    while (input != -1):
+    cart = []
 
-        # maybe 2 inputs instead of one
+    while (True):
 
-        # SHOULD ALSO PROMPT for searching catalogue keywords and specific book by ISBN
+        isbn = input("\nEnter ISBN: ")
 
-        input = input("Enter ISBN and quantity (max 10) with space seperated:")
+        query = """
+                SELECT *
+                FROM book
+                WHERE ISBN = %s;
+                """
+        vars = (isbn,)
+        cur.execute(query, vars)
 
-        # check for ISBN existence
+        if cur.fetchone() == None:
+            print("ISBN does not exist. Please enter an existing ISBN")
+            continue
 
-        # if ok, add ISBN and quantity to cart and maybe change it to a map?
+        quantity = input("\nEnter quantity: ")
+        if not quantity.isdigit():
+            continue
+        quantity_in_cart = 0
+        for order_part in cart:
+            if order_part[0] == isbn:
+                quantity_in_cart += int(quantity)
+
+        Qquery = """
+                 SELECT quantity_remaining
+                 FROM book
+                 WHERE ISBN = %s;
+                 """
+        cur.execute(Qquery, vars)
+        q_in_stock = cur.fetchone()[0]
+
+        if (quantity_in_cart + int(quantity)) > q_in_stock:
+            print("Not enough of book #" + isbn + " in stock to add to cart")
+            continue
+
+        order_part = (isbn, quantity)
+        cart.append(order_part)
+
+        print("\nEnter 1 to continue shopping: ")
+        print("Enter 0 to checkout")
+        continue_shopping = input("\nEnter input here: ")
+
+        if continue_shopping != '1':
+            break
 
     checkout_cart(cart, username)
 
-
 def checkout_cart(cart, username):
 
-    addr = input("Enter addr for the order or -1 to use existing addr: ")
+    create_order(username)
 
-    if addr == -1:
-        return   # todo get cart here
+    Qorder_num = """
+                 SELECT max(order_num)
+                 FROM store_order;
+                 """
 
-    card_num = input("Enter card num for the order or -1 to use existing addr: ")
+    cur.execute(Qorder_num,)
 
-    if card_num == -1:
-        return   # todo get card-num here
+    order_num = cur.fetchone()[0]
 
-    # todo update quantities of all bought items
-    # update sales for those books
+    ISBN_INDEX = 0
+    QUANTITY_INDEX = 1
+
+    for order_part in cart:
+        query = """
+                SELECT *
+                FROM book
+                WHERE ISBN = %s;
+                """
+        vars = (order_part[ISBN_INDEX],)
+        cur.execute(query, vars)
+
+        if cur.fetchone() == None:
+            Qorder_contains = """
+                              INSERT INTO order_contains(ISBN, quantity, order_num)
+                              VALUES(%s, %s, %s)
+                              """
+            vars = (order_part[ISBN_INDEX], order_part[QUANTITY_INDEX], order_num)
+
+            cur.execute(Qorder_contains, vars)
+
+        else:
+            Qorder_contains = """
+                              UPDATE order_contains
+                              SET quantity = quantity + %s
+                              WHERE order_num = %s AND ISBN = %s;
+                              """
+            vars = (order_part[QUANTITY_INDEX], order_num, order_part[ISBN_INDEX])
+
+            cur.execute(Qorder_contains, vars)
+
+
+    update_book_quantities(cart)
+
     # update tuples in publisher relation
-    # add new order tuple to the order relation
-    # add tuples (order_num, book) to order_contains relation
+
+def create_order(username):
+    addr = input("Enter addr for the order or 1 to use existing addr: ")
+
+    if addr == '1':
+        U_addr_query = """
+                        SELECT u_addr
+                        FROM store_user
+                        WHERE username = %s;
+                        """
+
+        vars = (username,)
+        cur.execute(U_addr_query, vars)
+        addr = cur.fetchone()
+
+    card_num = input("Enter card num for the order or 1 to use existing addr: ")
+
+    if card_num == '1':
+        U_card_query = """
+                        SELECT card_number
+                        FROM store_user
+                        WHERE username = %s;
+                        """
+
+        vars = (username,)
+        cur.execute(U_card_query, vars)
+        card_num = cur.fetchone()
 
 
+    new_order = """
+                INSERT INTO store_order(tracking_info, username, shipping_info, billing_info)
+                VALUES(%s, %s, %s, %s);
+                """
 
+    vars = ('Alabama', username, addr, card_num)
+    cur.execute(new_order, vars)
 
+def update_book_quantities(cart):
 
+    quantity_index = 1
+    isbn_index = 0
 
+    for order_part in cart:
+        update_num_sold = """
+                          UPDATE book
+                          SET num_sold = %s + (
+                            SELECT num_sold
+                            FROM book
+                            WHERE ISBN = %s
+                          )
+                          WHERE ISBN = %s;
+                          """
+        vars = (order_part[quantity_index], order_part[isbn_index], order_part[isbn_index])
+
+        cur.execute(update_num_sold, vars)
+
+        update_quantity_remain = """
+                                UPDATE book
+                                SET quantity_remaining =  (
+                                    SELECT quantity_remaining
+                                    FROM book
+                                    WHERE ISBN = %s
+                                    ) - %s
+                                WHERE ISBN = %s;
+                                """
+        vars = (order_part[isbn_index], order_part[quantity_index], order_part[isbn_index])
+
+        cur.execute(update_quantity_remain, vars)
+
+    restock = """
+              UPDATE book
+              SET quantity_remaining = 20 + quantity_remaining
+              WHERE quantity_remaining < 10;
+              """
+    cur.execute(restock)
 
 
 
@@ -532,15 +611,16 @@ def main():
     while (True):
         print("\nEnter 1 if you are a user")
         print("Enter 2 if you are an owner")
-        print("Enter 3 if you wish to exit")
-        user_type = int(input("\nEnter selection here: "))
-        if user_type == 2:
+        print("Enter 0 if you wish to exit")
+        user_type = input("\nEnter selection here: ")
+        if user_type == '2':
             owner_prompts()
-        elif user_type == 1:
+        elif user_type == '1':
             user_prompts()
-        elif user_type == 3:
+        elif user_type == '0':
             disconnect()
             break
+    
 
 
 
