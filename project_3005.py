@@ -446,15 +446,18 @@ def update_book_quantities(cart):
 
         cur.execute(update_quantity_remain, vars)
 
-    #if quantity remaining is below 10, restock that book
-    restock = """
-              UPDATE book
-              SET quantity_remaining = 20 + quantity_remaining
-              WHERE quantity_remaining < 10;
-              """
-    cur.execute(restock)
+    restock_books()
 
 
+# restocks all the books which have quantities below 10
+def restock_books():
+
+    Qrestock = """
+               UPDATE book
+               SET quantity_remaining = 20 + quantity_remaining
+               WHERE quantity_remaining < 10;
+               """
+    cur.execute(Qrestock)
 
 # owner code
 
