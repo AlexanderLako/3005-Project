@@ -429,7 +429,7 @@ def add_book():
     genres = []
     genre = 0
 
-    while genre != "-1":
+    while genre != "-1" or len(genres) == 0:
 
         genre = input("Enter genre (-1 when done): ")
         genres.append(genre)
@@ -437,28 +437,34 @@ def add_book():
     authors = []
     author = 0
 
-    while author != "-1":
+    while author != "-1" or len(authors) == 0:
 
         author = input("Enter author (-1 when done): ")
         authors.append(author)
 
     name = input("Enter book name: ")
-
     ISBN = input("Enter ISBN: ")
 
-    publisher = input("Enter publisher email addr: ") #PUBLISHER MUST ALREADY EXIST
+    publisher = input("Enter publisher email addr: ")
+    query = """
+            SELECT *
+            FROM publisher
+            WHERE email_addr =  %s;
+            """
+    vars = (publisher,)
+    cur.execute(query, vars)
+
+    if cur.fetchone() == None:
+        print("The publisher does not exist, please enter their information")
+        update_publisher(publisher)
 
     com_percentage = 0.1
-
     pages = input("Enter the number of pages in the book: ")
-
     price = input("Enter the price of the book: ")
-
     num_sold = 0
-
     quantity = 15
 
-    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s) ON CONFLICT (ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) DO NOTHING;"
+    query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr) VALUES(%s, %s, %s,%s, %s, %s,%s, %s)"
     vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher)
     cur.execute(query, vars)
 
@@ -476,12 +482,6 @@ def add_book():
         cur.execute(query, vars)
         j+=1
 
-
-    # todo add book entity based on these and what im missing
-
-    # should also add/update publisher tuple?? and genre and author
-    # iterate through list of authrors and genres to create new tuples
-
     print(name + " added to the store catologue")
 
 
@@ -495,15 +495,16 @@ def publisher_addition_prompts():
 
 def update_publisher(addr):
 
-    # check oif addr exists, then add publisher to entity relation
+    pname = input("Please enter publisher name: ")
+    address = input("Enter publisher address: ")
+    money_transfered = 0
 
-    # otherwise update?
+    query = "INSERT INTO publisher(email_addr, pname, address, money_transfered) VALUES(%s, %s, %s, %s) ON CONFLICT (email_addr) DO NOTHING;"
+    vars = (addr, pname, address, money_transfered)
+    cur.execute(query, vars)
 
 
-    # wb phone number?/
-
-
-    return
+    return addr
 
 
 
