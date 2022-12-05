@@ -1,118 +1,71 @@
-USER QUERY STUFF
+
+SELECT *
+FROM store_user
+WHERE username = %s;
 
 
-Gets tracking info for order_number
 SELECT tracking_info
-FROM order
-WHERE order_num = 'PARAM'
+FROM store_order
+WHERE order_num =  %s;
 
-
-checks if user exists, should have count of 1 if exists
-SELECT COUNT(1)
-FROM user
-WHERE username = 'PARAM';
-
-These queries help fill in info for order confirmation
-SELECT billing_info
-FROM user
-WHERE username = 'PARAM';
-
-SELECT shipping_info
-FROM user
-WHERE username = 'PARAM';
-
-
-
-search keys
-
-get the book with this name
-SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-FROM book, publisher
-WHERE book.bname = 'PARAM' AND publisher.email_addr = book.email_addr;
-
-get the book with this ISBN
-SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-FROM book, pubisher
-WHERE book.ISBN = 'PARAM' AND publisher.email_addr = book.email_addr;
-
-gets all books that have this genre name
-SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
-FROM book, publisher, genre
-WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = 'PARAM';
-
-gets all books that have this author name
-SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname,
-FROM book, publisher, author
-WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = 'PARAM';
-
-
-USED IN CONJUNCTION WITH:
-
-Gets the authors of a book
 SELECT author.aname
 FROM author, book
-WHERE author.ISBN = book.ISBN AND book.ISBN = 'PARAM';
+WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
 
-Gets the genres of a book
 SELECT genre.gname
 FROM genre, book
-WHERE genre.ISBN = book.ISBN AND book.ISBN = 'PARAM';
+WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
 
 
+SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+FROM book, publisher
+WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
 
 
+SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+FROM book, publisher
+WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
 
 
+SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+FROM book, publisher, genre
+WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = 'true';
 
 
+SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+FROM book, publisher, author
+WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = 'true';
 
 
-OWNER QUERY STUFF
-
-What is sale vs expenditure
-
-
-Does the sale report by author
-SELECT sum(revenue_table.quantity_sold), sum(revenue_table.book_revenue)
-FROM {
-  SELECT *, book.quantity_sold * book.price AS book_revenue
-  FROM book, author
-  WHERE book.ISBN = author.ISBN
-} revenue_table
-GROUP BY aname
-
-Does the sale report by genre
-
-SELECT sum(revenue_table.quantity_sold), sum(revenue_table.book_revenue)
-FROM {
-  SELECT book.quantity_sold * book.price AS book_revenue
-  FROM book, genre
-  WHERE book.ISBN = genre.ISBN
-} revenue_table
-GROUP BY gname;
+SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+FROM book, publisher
+WHERE publisher.email_addr = book.email_addr AND book.available = 'true';
 
 
+SELECT quantity_remaining
+FROM book
+WHERE ISBN = %s;
 
 
+SELECT max(order_num)
+FROM store_order;
 
 
-
-UPDATING INFO STUFF
-remember com.percent
-UPDATE publisher
-SET money_transferred = money_transferred + 'PRICE GOES HERE'
-WHERE email_addr = 'EMAIL HERE'
-
-UPDATE book
-SET quantity_remaining = quantity_remaining + 'PRICE GOES HERE'
-WHERE ISBN = 'EMAIL HERE'
+SELECT u_addr
+FROM store_user
+WHERE username = %s;
 
 
-DELETE FROM genre
-WHERE ISBN = 'PARAM'
+SELECT card_number
+FROM store_user
+WHERE username = %s;
 
-DELETE FROM author
-WHERE ISBN = 'PARAM'
 
-DELETE FROM book
-WHERE ISBN = 'PARAM';
+SELECT *
+FROM publisher
+WHERE email_addr =  %s;
+
+
+SELECT *
+FROM book
+WHERE ISBN = %s;
