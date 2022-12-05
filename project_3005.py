@@ -64,6 +64,7 @@ def user_prompts():
         else:
             print("invalid input\n")
 
+    #allows user to navigate the store
     while True:
         print("\nEnter 1 to query an existing order")
         print("Enter 2 to make a purchase")
@@ -112,6 +113,7 @@ def user_exists(username):
     else:
         return True
 
+#login prompt, login with username
 def login():
     username = input("\nEnter registered username to login: ")
 
@@ -121,6 +123,7 @@ def login():
     else:
         return username
 
+#register a user with their username, card, and address
 def register():
     username = input("\nEnter a new username to register: ")
 
@@ -139,7 +142,7 @@ def register():
 
         return username
 
-
+#search catalogue for the user to search by many different options
 def search_catalogue():
 
 
@@ -150,6 +153,7 @@ def search_catalogue():
     print("Enter 5 to see all available books")
     print("Enter 6 to go back")
 
+    #based on user input, search based on criteria
     user_prompt = input("\nEnter selection here: ")
     books = []
     if user_prompt == '1':
@@ -172,6 +176,7 @@ def search_catalogue():
         print("\nInvalid input")
         return
 
+    #print books in nice format
     for book in books:
         print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
         print('{:10}{:20}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
@@ -207,7 +212,7 @@ def search_catalogue():
 
 
 
-# gets the while querying
+# gets book by its ISBN
 def get_book_by_ISBN(ISBN):
 
     query = """
@@ -220,7 +225,7 @@ def get_book_by_ISBN(ISBN):
 
     return cur.fetchall()
 
-# gets the while querying
+# gets the book name
 def get_book_by_name(bname):
 
     query = """
@@ -233,6 +238,7 @@ def get_book_by_name(bname):
 
     return cur.fetchall()
 
+#get all books with the desired genre
 def get_books_by_genre(genre):
 
     query ="""
