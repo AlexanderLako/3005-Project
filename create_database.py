@@ -141,8 +141,8 @@ def load_db():
     ON CONFLICT (email_addr) DO NOTHING;
     """,
     """
-    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr)
-    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca')
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca', 'true')
     ON CONFLICT (ISBN) DO NOTHING;
     """,
     """
@@ -168,8 +168,8 @@ def load_db():
     ON CONFLICT (email_addr) DO NOTHING;
     """,
     """
-    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr)
-    VALUES(2, 15, 0, 420, 69, 'V Sauce Michael', 0.25, 'ye@gmail.com')
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(2, 15, 0, 420, 69, 'V Sauce Michael', 0.25, 'ye@gmail.com', 'true')
     ON CONFLICT (ISBN) DO NOTHING;
     """,
     """

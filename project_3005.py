@@ -310,6 +310,54 @@ def user_cart(username):
 
 def checkout_cart(cart, username):
 
+    create_order(username)
+
+    Qorder_num = """
+                 SELECT max(order_num)
+                 FROM store_order;
+                 """
+
+    cur.execute(Qorder_num,)
+
+    order_num = cur.fetchone()[0]
+
+    ISBN_INDEX = 0
+    QUANTITY_INDEX = 1
+
+    for order_part in cart:
+        query = """
+                SELECT *
+                FROM book
+                WHERE ISBN = %s;
+                """
+        vars = (order_part[ISBN_INDEX],)
+        cur.execute(query, vars)
+
+        if cur.fetchone() == None:
+            Qorder_contains = """
+                              INSERT INTO order_contains(ISBN, quantity, order_num)
+                              VALUES(%s, %s, %s)
+                              """
+            vars = (order_part[ISBN_INDEX], order_part[QUANTITY_INDEX], order_num)
+
+            cur.execute(Qorder_contains, vars)
+
+        else:
+            Qorder_contains = """
+                              UPDATE order_contains
+                              SET quantity = quantity + %s
+                              WHERE order_num = %s AND ISBN = %s;
+                              """
+            vars = (order_part[QUANTITY_INDEX], order_num, order_part[ISBN_INDEX])
+
+            cur.execute(Qorder_contains, vars)
+
+
+    update_book_quantities(cart)
+
+    # update tuples in publisher relation
+
+def create_order(username):
     addr = input("Enter addr for the order or 1 to use existing addr: ")
 
     if addr == '1':
@@ -344,34 +392,6 @@ def checkout_cart(cart, username):
 
     vars = ('Alabama', username, addr, card_num)
     cur.execute(new_order, vars)
-
-    Qorder_num = """
-                 SELECT max(order_num)
-                 FROM store_order;
-                 """
-
-    cur.execute(Qorder_num,)
-
-    order_num = cur.fetchone()[0]
-
-    ISBN_INDEX = 0
-    QUANTITY_INDEX = 1
-
-    for order_part in cart:
-        Qorder_contains = """
-                          INSERT INTO order_contains(ISBN, quantity, order_num)
-                          VALUES(%s, %s, %s)
-                          """
-        vars = (order_part[ISBN_INDEX], order_part[QUANTITY_INDEX], order_num)
-
-        cur.execute(Qorder_contains, vars)
-
-
-    update_book_quantities(cart)
-
-    # update tuples in publisher relation
-
-
 
 def update_book_quantities(cart):
 
