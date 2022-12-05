@@ -5,8 +5,8 @@ import psycopg2
 
 # user code
 
-SQLusername = "noah"
-SQLpassword = "1234"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
 SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
@@ -527,19 +527,29 @@ def add_book():
     genre = 0
 
     #allow user to enter multiple genres
-    while genre != "-1" or len(genres) == 0:
+    while True:
 
         genre = input("Enter genre (-1 when done): ")
-        genres.append(genre)
+        
+        if(genre != "-1"):
+            genres.append(genre)
+
+        if (genre == "-1" and len(genres) > 0):
+            break
 
     authors = []
     author = 0
 
     #allow user to enter multiple authors
-    while author != "-1" or len(authors) == 0:
+    while True:
 
         author = input("Enter author (-1 when done): ")
-        authors.append(author)
+        
+        if(author != "-1"):
+            authors.append(author)
+
+        if (author == "-1" and len(authors) > 0):
+            break
 
     name = input("Enter book name: ")
     ISBN = input("Enter ISBN: ")
