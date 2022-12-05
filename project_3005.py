@@ -279,6 +279,24 @@ def user_cart(username):
             continue
 
         quantity = input("\nEnter quantity: ")
+        if not quantity.isdigit():
+            continue
+        quantity_in_cart = 0
+        for order_part in cart:
+            if order_part[0] == isbn:
+                quantity_in_cart += int(quantity)
+
+        Qquery = """
+                 SELECT quantity_remaining
+                 FROM book
+                 WHERE ISBN = %s;
+                 """
+        cur.execute(Qquery, vars)
+        q_in_stock = cur.fetchone()[0]
+
+        if (quantity_in_cart + int(quantity)) > q_in_stock:
+            continue
+
         order_part = (isbn, quantity)
         cart.append(order_part)
 
@@ -376,6 +394,20 @@ def update_book_quantities(cart):
         vars = (order_part[quantity_index], order_part[isbn_index], order_part[isbn_index])
 
         cur.execute(update_num_sold, vars)
+
+        update_quantity_remain = """
+                                UPDATE book
+                                SET quantity_remaining =  (
+                                SELECT quantity_remaining
+                                FROM book
+                                WHERE ISBN = %s
+                                ) - %s
+                                WHERE ISBN = %s;
+                                """
+        vars = (order_part[isbn_index], order_part[quantity_index], order_part[isbn_index])
+
+        cur.execute(update_quantity_remain, vars)
+
 
 
 
