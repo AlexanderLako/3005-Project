@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "noah"
+SQLpassword = "1234"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -140,9 +140,6 @@ def register():
         return username
 
 
-
-#to do: add print all books functionality
-# do checks to make sure books are available
 def search_catalogue():
 
 
@@ -150,7 +147,8 @@ def search_catalogue():
     print("Enter 2 to search by book name")
     print("Enter 3 to search by genre")
     print("Enter 4 to search by author")
-    print("Enter 5 to logout")
+    print("Enter 5 to see all available books")
+    print("Enter 6 to logout")
 
     user_prompt = input("\nEnter selection here: ")
     books = []
@@ -166,8 +164,13 @@ def search_catalogue():
     elif user_prompt == '4':
         author = input("\nEnter author name: ")
         books = get_books_by_author(author)
+    elif user_prompt == '5':
+        books = get_all_available_books()
+    elif user_prompt == '6':
+        return
     else:
         print("\nInvalid input")
+        return
 
     for book in books:
         print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
@@ -177,7 +180,7 @@ def search_catalogue():
         aQuery = """
         SELECT author.aname
         FROM author, book
-        WHERE author.ISBN = book.ISBN AND book.ISBN = %s;
+        WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = true;
         """
         vars = (book[0], )
         cur.execute(aQuery, vars)
@@ -192,7 +195,7 @@ def search_catalogue():
         gQuery = """
         SELECT genre.gname
         FROM genre, book
-        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s;
+        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = true;
         """
         cur.execute(gQuery, vars)
         genres = cur.fetchall()
@@ -210,7 +213,7 @@ def get_book_by_ISBN(ISBN):
     query = """
         SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
         FROM book, publisher
-        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr;
+        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = true;
     """
     vars = (ISBN, )
     cur.execute(query, vars)
@@ -223,7 +226,7 @@ def get_book_by_name(bname):
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher
-    WHERE book.bname = %s AND publisher.email_addr = book.email_addr;
+    WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = true;
     """
     vars = (bname,)
     cur.execute(query, vars)
@@ -235,7 +238,7 @@ def get_books_by_genre(genre):
     query ="""
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, genre
-    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s;
+    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = true;
     """
     vars = (genre,)
     cur.execute(query, vars)
@@ -248,12 +251,24 @@ def get_books_by_author(author_name):
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, author
-    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s;
+    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = true;
     """
     vars = (author_name,)
     cur.execute(query, vars)
 
     return cur.fetchall()
+
+def get_all_available_books():
+    query = """
+    SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
+    FROM book, publisher
+    WHERE publisher.email_addr = book.email_addr AND book.available = true;
+    """
+    cur.execute(query)
+
+    return cur.fetchall()
+
+
 
 
 # prompts input for ISBN and quantity
