@@ -148,7 +148,7 @@ def search_catalogue():
     print("Enter 3 to search by genre")
     print("Enter 4 to search by author")
     print("Enter 5 to see all available books")
-    print("Enter 6 to logout")
+    print("Enter 6 to go back")
 
     user_prompt = input("\nEnter selection here: ")
     books = []
@@ -180,7 +180,7 @@ def search_catalogue():
         aQuery = """
         SELECT author.aname
         FROM author, book
-        WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = true;
+        WHERE author.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
         """
         vars = (book[0], )
         cur.execute(aQuery, vars)
@@ -195,7 +195,7 @@ def search_catalogue():
         gQuery = """
         SELECT genre.gname
         FROM genre, book
-        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = true;
+        WHERE genre.ISBN = book.ISBN AND book.ISBN = %s AND book.available = 'true';
         """
         cur.execute(gQuery, vars)
         genres = cur.fetchall()
@@ -213,7 +213,7 @@ def get_book_by_ISBN(ISBN):
     query = """
         SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
         FROM book, publisher
-        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = true;
+        WHERE book.ISBN = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
     """
     vars = (ISBN, )
     cur.execute(query, vars)
@@ -226,7 +226,7 @@ def get_book_by_name(bname):
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher
-    WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = true;
+    WHERE book.bname = %s AND publisher.email_addr = book.email_addr AND book.available = 'true';
     """
     vars = (bname,)
     cur.execute(query, vars)
@@ -238,7 +238,7 @@ def get_books_by_genre(genre):
     query ="""
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, genre
-    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = true;
+    WHERE book.email_addr = publisher.email_addr AND genre.ISBN = book.ISBN AND genre.gname = %s AND book.available = 'true';
     """
     vars = (genre,)
     cur.execute(query, vars)
@@ -251,7 +251,7 @@ def get_books_by_author(author_name):
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher, author
-    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = true;
+    WHERE book.email_addr = publisher.email_addr AND author.ISBN = book.ISBN AND author.aname = %s AND book.available = 'true';
     """
     vars = (author_name,)
     cur.execute(query, vars)
@@ -262,7 +262,7 @@ def get_all_available_books():
     query = """
     SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, publisher.pname
     FROM book, publisher
-    WHERE publisher.email_addr = book.email_addr AND book.available = true;
+    WHERE publisher.email_addr = book.email_addr AND book.available = 'true';
     """
     cur.execute(query)
 
