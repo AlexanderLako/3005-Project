@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -558,6 +558,9 @@ def add_book():
     genres = []
     genre = 0
 
+    name = input("Enter book name: ")
+    ISBN = input("Enter ISBN: ")
+
     #allow user to enter multiple genres
     while True:
 
@@ -583,8 +586,6 @@ def add_book():
         if (author == "-1" and len(authors) > 0):
             break
 
-    name = input("Enter book name: ")
-    ISBN = input("Enter ISBN: ")
 
     publisher = input("Enter publisher email addr: ")
     query = """
@@ -626,6 +627,7 @@ def add_book():
         j+=1
 
     print(name + " added to the store catologue")
+    owner_prompts()
 
 
 
@@ -644,9 +646,17 @@ def update_publisher(addr):
     numbers = 0
 
     #let owner enter phone numbers and insert them into the table
-    while numbers != "-1" or len(phoneNumbers) == 0:
-        numbers = input("Enter publisher phone number (-1 when done): ")
+    while True:
 
+        numbers = input("Enter publisher phone number (-1 when done): ")
+        
+        if(numbers != "-1"):
+            phoneNumbers.append(numbers)
+
+        if (numbers == "-1" and len(phoneNumbers) > 0):
+            break
+        
+    i = 0
     while i < len(phoneNumbers):
         query = "INSERT INTO phone_number(email_addr, phone_number) VALUES(%s, %s) ON CONFLICT (email_addr, phone_number) DO NOTHING;"
         vars = (addr, phoneNumbers[i])
@@ -677,6 +687,7 @@ def remove_book():
     cur.execute(Qupdate_avail, vars)
 
     print("\nBook " + ISBN + " is now removed from the catalogue")
+    owner_prompts()
 
 
 # Checks to see whether the ISBN exists
@@ -699,6 +710,7 @@ def check_ISBN_exists(isbn):
 # main loop
 def main():
 
+    #connect to database
     connect()
 
     while (True):

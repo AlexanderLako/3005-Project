@@ -57,7 +57,7 @@ def connect():
         num_sold  int,
         pages     INT,
         price     float,
-        bname      varchar(15),
+        bname      varchar(50),
         com_percentage  FLOAT,
         email_addr varchar(50) NOT NULL,
         available  varchar(50),
