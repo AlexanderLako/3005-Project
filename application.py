@@ -462,6 +462,13 @@ def restock_books():
                """
     cur.execute(Qrestock)
 
+
+
+
+
+
+
+
 # owner code
 
 
@@ -469,14 +476,14 @@ def restock_books():
 # prompts for the owner to add or remove book and get reports
 def owner_prompts():
 
-    print("\nEnter 1 to add a book to the store")
-    print("Enter 2 to remove a book from the store")
-    print("Enter 3 to query reports from the store")
-    print("Enter 0 to return to main menu")
-
-    owner_choice = input("\nEnter here: ")
-
     while(True):
+        print("\nEnter 1 to add a book to the store")
+        print("Enter 2 to remove a book from the store")
+        print("Enter 3 to query reports from the store")
+        print("Enter 0 to return to main menu")
+
+        owner_choice = input("\nEnter here: ")
+
         if owner_choice == '3':
             query_store_reports()
         elif owner_choice == '2':
@@ -497,15 +504,26 @@ def query_store_reports():
     print("\nEnter 1 to query sales vs. expenditure report")
     print("Enter 2 to query sales by genre")
     print("Enter 3 to query sales by author")
+    print("Enter 0 to return")
 
     owner_choice = input("\nEnter here: ")
 
     if owner_choice == '3':
         author_report = query_report_author()
+        print('\n{:20}{:20}'.format("Author", "Revenue"))
+        for report in author_report:
+            print('{:20}{:20}'.format(str(report[0]), str(report[1])))
+
     elif owner_choice == '2':
-        query_report_genre()
+        genre_report = query_report_genre()
+        print('\n{:20}{:20}'.format("Genre", "Revenue"))
+        for report in genre_report:
+            print('{:20}{:20}'.format(str(report[0]), str(report[1])))
+
     elif owner_choice == '1':
         query_sale_v_expenditure()
+    elif owner_choice == '0':
+        return
     else:
         print("invalid input")
 
@@ -521,7 +539,7 @@ def query_sale_v_expenditure():
 def query_report_genre():
 
     Gquery = """
-             SELECT sum(revenue)
+             SELECT gname, sum(revenue)
              FROM (
                  SELECT book.ISBN AS ISBN, genre.gname, (book.price * book.num_sold) AS revenue
                  FROM book, genre
@@ -538,7 +556,7 @@ def query_report_genre():
 
 def query_report_author():
     Gquery = """
-             SELECT sum(revenue)
+             SELECT aname, sum(revenue)
              FROM (
                  SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
                  FROM book, author
