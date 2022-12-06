@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -100,7 +100,7 @@ def connect():
        quantity  INT,
        primary key (ISBN, order_num),
        foreign key (ISBN) references book(ISBN),
-       foreign key (ISBN) references store_order
+       foreign key (order_num) references store_order
       );
       """
     )
