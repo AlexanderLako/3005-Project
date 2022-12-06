@@ -413,6 +413,7 @@ def create_order(username):
 
     vars = ('Alabama', username, addr, card_num)
     cur.execute(new_order, vars)
+    print("Thank you for placing an order %s!" % (username))
 
 #update the book quantities based on what the user ordered
 def update_book_quantities(cart):
