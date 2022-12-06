@@ -191,7 +191,39 @@ def load_db():
     INSERT INTO author(ISBN, aname)
     VALUES(2, 'Kanye')
     ON CONFLICT (ISBN, aname) DO NOTHING;
+    """,
+
     """
+    INSERT INTO publisher(email_addr, pname, address, money_transfered)
+    VALUES('cwheezer@gmail.com', 'Carl', 'Wheezer', 0)
+    ON CONFLICT (email_addr) DO NOTHING;
+    """,
+    """
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(3, 15, 0, 123, 56, 'Why I Pull Up - A series', 0.20, 'cwheezer@gmail.com', 'true')
+    ON CONFLICT (ISBN) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(3, 'autobiography')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(3, 'how-to')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(3, 'religious')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(3, 'Carl Wheezer')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """
+
   )
 
     for book in books:
