@@ -292,13 +292,25 @@ def user_cart(username):
         #get ISBN
         isbn = input("\nEnter ISBN: ")
 
+        check_avail = """
+                      SELECT available
+                      FROM book
+                      WHERE isbn = %s;
+                      """
+        vars = (isbn,)
+        cur.execute(check_avail, vars)
+
         if not check_ISBN_exists(isbn):
-            print("ISBN does not exist. Please enter an existing ISBN")
+            print("\nISBN does not exist. Please enter an existing ISBN")
+            continue
+        elif cur.fetchone()[0] == 'false':
+            print("\nBook is currently unavailable (removed from store)")
             continue
 
         #enter the quantity of books you want to buy
         quantity = input("\nEnter quantity: ")
         if not quantity.isdigit():
+            print("\nPlease enter a number")
             continue
         quantity_in_cart = 0
         for order_part in cart:
@@ -538,7 +550,7 @@ def query_sale_v_expenditure():
     sEquery = """
         SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
         FROM (
-            SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered 
+            SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered
             FROM book, publisher
             WHERE book.email_addr = publisher.email_addr
         ) sVe_table;
@@ -592,6 +604,17 @@ def add_book():
 
     name = input("Enter book name: ")
     ISBN = input("Enter ISBN: ")
+
+    if check_ISBN_exists(ISBN):
+        make_avail = """
+                     UPDATE book
+                     SET available = 'true'
+                     WHERE ISBN = %s;
+                     """
+        vars = (ISBN,)
+        cur.execute(make_avail, vars)
+        print("ISBN exists, book is now available in catalogue")
+        break
 
     #allow user to enter multiple genres
     while True:
