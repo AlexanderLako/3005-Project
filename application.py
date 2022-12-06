@@ -710,6 +710,7 @@ def check_ISBN_exists(isbn):
 # main loop
 def main():
 
+    #connect to database
     connect()
 
     while (True):
