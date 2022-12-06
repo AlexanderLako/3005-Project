@@ -85,6 +85,10 @@ SET quantity_remaining =  (
 WHERE ISBN = %s;
 
 
+UPDATE publisher
+SET money_transfered = money_transfered + %s
+WHERE email_addr = %s;
+
 
 UPDATE book
 SET quantity_remaining = 20 + quantity_remaining

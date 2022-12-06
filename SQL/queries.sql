@@ -67,10 +67,15 @@ SELECT card_number
 FROM store_user
 WHERE username = %s;
 
+/* Queries the publisher and the amount they should be paid based on a book item in a user's cart */
+SELECT (book.price * book.com_percentage) * %s, email_addr
+FROM book
+WHERE ISBN = %s;
+
 /* Gets the revenue made grouped by genre */
 SELECT gname, sum(revenue)
 FROM (
-    SELECT book.ISBN AS ISBN, genre.gname, (book.price * book.num_sold) AS revenue
+    SELECT book.ISBN AS ISBN, genre.gname, ((book.price - book.price * book.com_percentage) * book.num_sold) AS revenue
     FROM book, genre
     WHERE book.ISBN = genre.ISBN
 ) rev_table
@@ -79,7 +84,7 @@ GROUP BY gname;
 /*Gets the revenue grouped by author */
 SELECT aname, sum(revenue)
 FROM (
-    SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
+    SELECT book.ISBN AS ISBN, author.aname, ((book.price - book.price * book.com_percentage) * book.num_sold) AS revenue
     FROM book, author
     WHERE book.ISBN = author.ISBN
 ) rev_table

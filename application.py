@@ -508,19 +508,19 @@ def restock_books():
 
 
 
-def pay_publishers(isbn, quantity):
+def pay_publisher(isbn, quantity):
 
     transfer_Q   = """
                    SELECT (book.price * book.com_percentage) * %s, email_addr
                    FROM book
                    WHERE ISBN = %s;
                    """
-    vars = (isbn, quantity)
-    cur.execute(transfer_amt, vars)
+    vars = (quantity, isbn)
+    cur.execute(transfer_Q, vars)
 
-    transferQ_result = fetchone()
-    pub_email = transfer_Q[1]
-    amt = transfer_Q[0]
+    transferQ_result = cur.fetchone()
+    pub_email = transferQ_result[1]
+    amt = transferQ_result[0]
 
     pay_pub = """
               UPDATE publisher
