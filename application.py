@@ -591,13 +591,13 @@ def query_sale_v_expenditure():
 
 
 
-# queries reprt by keyowrd for owner
+# queries sale reports for each genre
 def query_report_genre():
 
     Gquery = """
              SELECT gname, sum(revenue)
              FROM (
-                 SELECT book.ISBN AS ISBN, genre.gname, (book.price * book.num_sold) AS revenue
+                 SELECT book.ISBN AS ISBN, genre.gname, ((book.price - book.price * book.com_percentage) * book.num_sold) AS revenue
                  FROM book, genre
                  WHERE book.ISBN = genre.ISBN
              ) rev_table
@@ -614,7 +614,7 @@ def query_report_author():
     Aquery = """
              SELECT aname, sum(revenue)
              FROM (
-                 SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
+                 SELECT book.ISBN AS ISBN, author.aname, ((book.price - book.price * book.com_percentage) * book.num_sold) AS revenue
                  FROM book, author
                  WHERE book.ISBN = author.ISBN
              ) rev_table
