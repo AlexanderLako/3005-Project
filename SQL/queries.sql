@@ -1,4 +1,4 @@
-/*Retrieves user with given username from store_user*/
+/*Retrieves user information with given username from store_user*/
 SELECT *
 FROM store_user
 WHERE username = %s;
@@ -71,3 +71,11 @@ WHERE email_addr =  %s;
 SELECT *
 FROM book
 WHERE ISBN = %s;
+
+/*Calculate and give the sales and expenditures from a sub-relation containing revenue and money_transfered from the book and publisher relations*/
+SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
+FROM (
+    SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered 
+    FROM book, publisher
+    WHERE book.email_addr = publisher.email_addr
+) sVe_table;

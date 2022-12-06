@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "noah"
+SQLpassword = "1234"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -521,7 +521,10 @@ def query_store_reports():
             print('{:20}{:20}'.format(str(report[0]), str(report[1])))
 
     elif owner_choice == '1':
-        query_sale_v_expenditure()
+        sVeReport = query_sale_v_expenditure()
+        print('\n{:20}{:20}'.format("Sales", "Expenditures"))
+        for report in sVeReport:
+            print('{:20}{:20}'.format(str(report[0]), str(report[1])))
     elif owner_choice == '0':
         return
     else:
@@ -531,7 +534,17 @@ def query_store_reports():
 
 
 def query_sale_v_expenditure():
-    return
+    sEquery = """
+        SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
+        FROM (
+            SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered 
+            FROM book, publisher
+            WHERE book.email_addr = publisher.email_addr
+        ) sVe_table;
+        """
+    cur.execute(sEquery)
+
+    return cur.fetchall()
 
 
 
@@ -555,7 +568,7 @@ def query_report_genre():
 
 
 def query_report_author():
-    Gquery = """
+    Aquery = """
              SELECT aname, sum(revenue)
              FROM (
                  SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
@@ -565,7 +578,7 @@ def query_report_author():
              GROUP BY aname;
              """
 
-    cur.execute(Gquery)
+    cur.execute(Aquery)
 
     return cur.fetchall()
 
