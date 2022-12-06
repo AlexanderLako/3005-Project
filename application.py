@@ -8,7 +8,7 @@ import psycopg2
 SQLusername = "noah"
 SQLpassword = "1234"
 
-SQLstring = "dbname=comp3005 user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -413,6 +413,7 @@ def create_order(username):
 
     vars = ('Alabama', username, addr, card_num)
     cur.execute(new_order, vars)
+    print("Thank you for placing an order %s!" % (username))
 
 #update the book quantities based on what the user ordered
 def update_book_quantities(cart):
@@ -680,13 +681,13 @@ def update_publisher(addr):
     while True:
 
         numbers = input("Enter publisher phone number (-1 when done): ")
-        
+
         if(numbers != "-1"):
             phoneNumbers.append(numbers)
 
         if (numbers == "-1" and len(phoneNumbers) > 0):
             break
-        
+
     i = 0
     while i < len(phoneNumbers):
         query = "INSERT INTO phone_number(email_addr, phone_number) VALUES(%s, %s) ON CONFLICT (email_addr, phone_number) DO NOTHING;"

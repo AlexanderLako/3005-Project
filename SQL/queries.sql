@@ -62,6 +62,24 @@ SELECT card_number
 FROM store_user
 WHERE username = %s;
 
+/* Gets the revenue made grouped by genre */
+SELECT gname, sum(revenue)
+FROM (
+    SELECT book.ISBN AS ISBN, genre.gname, (book.price * book.num_sold) AS revenue
+    FROM book, genre
+    WHERE book.ISBN = genre.ISBN
+) rev_table
+GROUP BY gname;
+
+/*Gets the revenue grouped by author */
+SELECT aname, sum(revenue)
+FROM (
+    SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
+    FROM book, author
+    WHERE book.ISBN = author.ISBN
+) rev_table
+GROUP BY aname;
+
 /*Get the publisher information with the given email address from the publisher relation*/
 SELECT *
 FROM publisher
