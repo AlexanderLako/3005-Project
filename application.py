@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -644,9 +644,17 @@ def update_publisher(addr):
     numbers = 0
 
     #let owner enter phone numbers and insert them into the table
-    while numbers != "-1" or len(phoneNumbers) == 0:
-        numbers = input("Enter publisher phone number (-1 when done): ")
+    while True:
 
+        numbers = input("Enter publisher phone number (-1 when done): ")
+        
+        if(numbers != "-1"):
+            phoneNumbers.append(numbers)
+
+        if (numbers == "-1" and len(phoneNumbers) > 0):
+            break
+        
+    i = 0
     while i < len(phoneNumbers):
         query = "INSERT INTO phone_number(email_addr, phone_number) VALUES(%s, %s) ON CONFLICT (email_addr, phone_number) DO NOTHING;"
         vars = (addr, phoneNumbers[i])
