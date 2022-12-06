@@ -507,7 +507,8 @@ def restock_books():
 
 
 
-
+def pay_publishers():
+    return
 
 
 
@@ -540,9 +541,8 @@ def owner_prompts():
 
 
 #Asks the owner which reports they want to see
+# NOTE that these reports consider removed books as well
 def query_store_reports():
-    report_type = []
-    # todo print query options
 
     print("\nEnter 1 to query sales vs. expenditure report")
     print("Enter 2 to query sales by genre")
@@ -591,7 +591,7 @@ def query_sale_v_expenditure():
 
 
 
-# queries sale reports for each genre
+# queries store sale reports for each genre
 def query_report_genre():
 
     Gquery = """
@@ -609,7 +609,7 @@ def query_report_genre():
     return cur.fetchall()
 
 
-
+# queries the amount the store has made by each author
 def query_report_author():
     Aquery = """
              SELECT aname, sum(revenue)
@@ -632,7 +632,6 @@ def add_book():
     genres = []
     genre = 0
 
-    name = input("Enter book name: ")
     ISBN = input("Enter ISBN: ")
 
     if check_ISBN_exists(ISBN):
@@ -643,8 +642,10 @@ def add_book():
                      """
         vars = (ISBN,)
         cur.execute(make_avail, vars)
-        print("\nISBN already exists, book is now available again in catalogue")
+        print("\nISBN already exists, book has been re-added to the catalogue")
         return
+
+    name = input("Enter book name: ")
 
     #allow user to enter multiple genres
     while True:
@@ -712,7 +713,6 @@ def add_book():
         j+=1
 
     print(name + " added to the store catologue")
-    owner_prompts()
 
 
 
@@ -756,6 +756,7 @@ def update_publisher(addr):
 # by setting the book's available attribute to 'false'
 def remove_book():
 
+    print_books(get_all_available_books())
     ISBN = input("\nEnter ISBN of book to remove it from store: ")
 
     if not check_ISBN_exists(ISBN):
@@ -772,7 +773,6 @@ def remove_book():
     cur.execute(Qupdate_avail, vars)
 
     print("\nBook " + ISBN + " is now removed from the catalogue")
-    owner_prompts()
 
 
 # Checks to see whether the ISBN exists
