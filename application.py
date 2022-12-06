@@ -39,7 +39,6 @@ def connect():
     db_version = cur.fetchone()
     print(db_version)
     conn.commit()
-    # disconnect()
 
 
 
@@ -492,6 +491,8 @@ def update_book_quantities(cart):
 
         cur.execute(update_quantity_remain, vars)
 
+        pay_publisher(order_part[isbn_index], order_part[quantity_index])
+
     restock_books()
 
 
@@ -507,8 +508,27 @@ def restock_books():
 
 
 
-def pay_publishers():
-    return
+def pay_publishers(isbn, quantity):
+
+    transfer_Q   = """
+                   SELECT (book.price * book.com_percentage) * %s, email_addr
+                   FROM book
+                   WHERE ISBN = %s;
+                   """
+    vars = (isbn, quantity)
+    cur.execute(transfer_amt, vars)
+
+    transferQ_result = fetchone()
+    pub_email = transfer_Q[1]
+    amt = transfer_Q[0]
+
+    pay_pub = """
+              UPDATE publisher
+              SET money_transfered = money_transfered + %s
+              WHERE email_addr = %s;
+              """
+    vars = (amt, pub_email)
+    cur.execute(pay_pub, vars)
 
 
 
