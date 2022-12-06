@@ -195,7 +195,7 @@ def load_db():
 
     """
     INSERT INTO publisher(email_addr, pname, address, money_transfered)
-    VALUES('cwheezer@gmail.com', 'Carl', 'Wheezer', 0)
+    VALUES('cwheezer@gmail.com', 'Carl Wheezer', 'Jimmys moms house', 0)
     ON CONFLICT (email_addr) DO NOTHING;
     """,
     """

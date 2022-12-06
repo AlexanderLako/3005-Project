@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "noah"
-SQLpassword = "1234"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -64,12 +64,14 @@ def user_prompts():
         else:
             print("invalid input\n")
 
+    print("\nYou are now logged as " +username)
+
     #allows user to navigate the store
     while True:
         print("\nEnter 1 to query an existing order")
         print("Enter 2 to make a purchase")
         print("Enter 3 to search catalogue by keyword")
-        print("Enter 4 to return to main menu")
+        print("Enter 0 to return to main menu")
 
         user_prompt = input("\nEnter here: ")
         if (user_prompt.isdigit() and int(user_prompt) == 1):
@@ -78,7 +80,7 @@ def user_prompts():
             user_cart(username)
         elif user_prompt.isdigit() and int(user_prompt) == 3:
             search_catalogue()
-        elif user_prompt.isdigit() and int(user_prompt) == 4:
+        elif user_prompt.isdigit() and int(user_prompt) == 0:
             return
         else:
             print("invalid input")
@@ -156,7 +158,7 @@ def search_catalogue():
     print("Enter 3 to search by genre")
     print("Enter 4 to search by author")
     print("Enter 5 to see all available books")
-    print("Enter 6 to go back")
+    print("Enter 0 to go back")
 
     #based on user input, search based on criteria
     user_prompt = input("\nEnter selection here: ")
@@ -175,16 +177,18 @@ def search_catalogue():
         books = get_books_by_author(author)
     elif user_prompt == '5':
         books = get_all_available_books()
-    elif user_prompt == '6':
+    elif user_prompt == '0':
         return
     else:
         print("\nInvalid input")
         return
 
-    #print books in nice format
+    print_books(books)
+
+def print_books(books):
     for book in books:
-        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
-        print('{:10}{:20}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
+        print('{:10}{:30}{:15}{:10}{:15}{:10}'.format("ISBN", "Name", "Price", "Pg Num", "Quantity", "Publish Name"))
+        print('{:10}{:30}{:15}{:10}{:15}{:10}'.format(str(book[0]), str(book[1]), str(book[2]), str(book[3]), str(book[4]), str(book[5])))
 
         # get author names
         aQuery = """
@@ -287,6 +291,7 @@ def get_all_available_books():
 def user_cart(username):
     cart = []
 
+    print_books(get_all_available_books())
     while (True):
 
         #get ISBN
@@ -295,15 +300,16 @@ def user_cart(username):
         check_avail = """
                       SELECT available
                       FROM book
-                      WHERE isbn = %s;
+                      WHERE ISBN = %s;
                       """
         vars = (isbn,)
         cur.execute(check_avail, vars)
+        is_avail = cur.fetchall()
 
         if not check_ISBN_exists(isbn):
             print("\nISBN does not exist. Please enter an existing ISBN")
             continue
-        elif cur.fetchone()[0] == 'false':
+        elif is_avail[0][0] == 'false':
             print("\nBook is currently unavailable (removed from store)")
             continue
 
@@ -340,6 +346,8 @@ def user_cart(username):
 
         if continue_shopping != '1':
             break
+        else:
+            print_books(get_all_available_books())
 
     checkout_cart(cart, username)
 
@@ -348,30 +356,53 @@ def checkout_cart(cart, username):
 
     create_order(username)
 
+    # gets the created order's order number
+    # (most recently created order will have the highest order number)
     Qorder_num = """
                  SELECT max(order_num)
                  FROM store_order;
                  """
 
     cur.execute(Qorder_num,)
-
     order_num = cur.fetchone()[0]
 
+    add_order_items(order_num, cart)
+
+    update_book_quantities(cart)
+
+    # update tuples in publisher relation
+
+
+# adds all items in the cart to the order_contains relation using the order number
+def add_order_items(order_num, cart):
     ISBN_INDEX = 0
     QUANTITY_INDEX = 1
 
     #for each item in the cart first try to get the ISBN
     for order_part in cart:
-        if not check_ISBN_exists(order_part[ISBN_INDEX]):
+
+        # queries the tuple with this particular candidate key for order_contains
+        Qorder_part_exists = """
+                             SELECT *
+                             FROM order_contains
+                             WHERE ISBN = %s AND order_num = %s;
+                             """
+        vars = (order_part[ISBN_INDEX], order_num)
+        cur.execute(Qorder_part_exists, vars)
+
+        check_part_exists = cur.fetchone()
+
+        # checks if the (isbn, order_num) does not already exist. Insert if not exists
+        if check_part_exists == None:
             Qorder_contains = """
                               INSERT INTO order_contains(ISBN, quantity, order_num)
-                              VALUES(%s, %s, %s)
+                              VALUES(%s, %s, %s);
                               """
             vars = (order_part[ISBN_INDEX], order_part[QUANTITY_INDEX], order_num)
 
             cur.execute(Qorder_contains, vars)
 
-        #update the order with a order number and the ISBN
+        #update the order with a order number and the ISBN if already exists
         else:
             Qorder_contains = """
                               UPDATE order_contains
@@ -383,13 +414,11 @@ def checkout_cart(cart, username):
             cur.execute(Qorder_contains, vars)
 
 
-    update_book_quantities(cart)
 
-    # update tuples in publisher relation
 
 #Create an order for a user
 def create_order(username):
-    addr = input("Enter addr for the order or 1 to use existing addr: ")
+    addr = input("\nEnter addr for the order or 1 to use existing addr: ")
 
     #if the user enters '1', get their existing address
     if addr == '1':
@@ -425,7 +454,8 @@ def create_order(username):
 
     vars = ('Alabama', username, addr, card_num)
     cur.execute(new_order, vars)
-    print("Thank you for placing an order %s!" % (username))
+    print("\nThank you for placing an order %s!" % (username))
+
 
 #update the book quantities based on what the user ordered
 def update_book_quantities(cart):
@@ -613,8 +643,8 @@ def add_book():
                      """
         vars = (ISBN,)
         cur.execute(make_avail, vars)
-        print("ISBN exists, book is now available in catalogue")
-        break
+        print("\nISBN already exists, book is now available again in catalogue")
+        return
 
     #allow user to enter multiple genres
     while True:

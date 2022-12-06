@@ -52,6 +52,11 @@ WHERE ISBN = %s;
 SELECT max(order_num)
 FROM store_order;
 
+/*Gets checks if the given order part already exists by getting all tuples with this primary key and checking array size is 0*/
+SELECT *
+FROM order_contains
+WHERE ISBN = %s AND order_num = %s;
+
 /*Gets the user address of the user with the given username from the store_user relation*/
 SELECT u_addr
 FROM store_user
@@ -93,7 +98,7 @@ WHERE ISBN = %s;
 /*Calculate and give the sales and expenditures from a sub-relation containing revenue and money_transfered from the book and publisher relations*/
 SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
 FROM (
-    SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered 
+    SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered
     FROM book, publisher
     WHERE book.email_addr = publisher.email_addr
 ) sVe_table;
