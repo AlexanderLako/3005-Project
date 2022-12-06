@@ -43,31 +43,31 @@ SELECT book.ISBN, book.bname, book.price, book.pages, book.quantity_remaining, p
 FROM book, publisher
 WHERE publisher.email_addr = book.email_addr AND book.available = 'true';
 
-/**/
+/*Gets the quantity remaining of the book with the given ISBN from the book relation*/
 SELECT quantity_remaining
 FROM book
 WHERE ISBN = %s;
 
-/**/
+/*Gets the max order_num(which is the most recent order added due to the use of a sequence) from store_order*/
 SELECT max(order_num)
 FROM store_order;
 
-/**/
+/*Gets the user address of the user with the given username from the store_user relation*/
 SELECT u_addr
 FROM store_user
 WHERE username = %s;
 
-/**/
+/*Gets the card_number of the user with the given username from the store_user relation*/
 SELECT card_number
 FROM store_user
 WHERE username = %s;
 
-/**/
+/*Get the publisher information with the given email address from the publisher relation*/
 SELECT *
 FROM publisher
 WHERE email_addr =  %s;
 
-/**/
+/*Get the book information with the given ISBN from the book relation*/
 SELECT *
 FROM book
 WHERE ISBN = %s;
