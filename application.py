@@ -558,6 +558,9 @@ def add_book():
     genres = []
     genre = 0
 
+    name = input("Enter book name: ")
+    ISBN = input("Enter ISBN: ")
+
     #allow user to enter multiple genres
     while True:
 
@@ -583,8 +586,6 @@ def add_book():
         if (author == "-1" and len(authors) > 0):
             break
 
-    name = input("Enter book name: ")
-    ISBN = input("Enter ISBN: ")
 
     publisher = input("Enter publisher email addr: ")
     query = """
@@ -626,6 +627,7 @@ def add_book():
         j+=1
 
     print(name + " added to the store catologue")
+    owner_prompts()
 
 
 
@@ -685,6 +687,7 @@ def remove_book():
     cur.execute(Qupdate_avail, vars)
 
     print("\nBook " + ISBN + " is now removed from the catalogue")
+    owner_prompts()
 
 
 # Checks to see whether the ISBN exists
