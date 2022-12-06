@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
-SQLpassword = "3005"
+SQLusername = "Brian"
+SQLpassword = "Brian"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -498,26 +498,58 @@ def query_store_reports():
     print("Enter 2 to query sales by genre")
     print("Enter 3 to query sales by author")
 
-    owner_choice = int(input("\nEnter here: "))
+    owner_choice = input("\nEnter here: ")
 
-    if owner_choice == 3:
-        query_report_author()
-    elif owner_choice == 2:
+    if owner_choice == '3':
+        author_report = query_report_author()
+    elif owner_choice == '2':
         query_report_genre()
-    elif owner_choice == 1:
-        return
+    elif owner_choice == '1':
+        query_sale_v_expenditure()
     else:
         print("invalid input")
+
+
+
+
+def query_sale_v_expenditure():
+    return
+
+
 
 # queries reprt by keyowrd for owner
 def query_report_genre():
 
-    return
+    Gquery = """
+             SELECT sum(revenue)
+             FROM (
+                 SELECT book.ISBN AS ISBN, genre.gname, (book.price * book.num_sold) AS revenue
+                 FROM book, genre
+                 WHERE book.ISBN = genre.ISBN
+             ) rev_table
+             GROUP BY gname;
+             """
+
+    cur.execute(Gquery)
+
+    return cur.fetchall()
+
 
 
 def query_report_author():
+    Gquery = """
+             SELECT sum(revenue)
+             FROM (
+                 SELECT book.ISBN AS ISBN, author.aname, (book.price * book.num_sold) AS revenue
+                 FROM book, author
+                 WHERE book.ISBN = author.ISBN
+             ) rev_table
+             GROUP BY aname;
+             """
 
-    return
+    cur.execute(Gquery)
+
+    return cur.fetchall()
 
 
 
@@ -530,7 +562,7 @@ def add_book():
     while True:
 
         genre = input("Enter genre (-1 when done): ")
-        
+
         if(genre != "-1"):
             genres.append(genre)
 
@@ -544,7 +576,7 @@ def add_book():
     while True:
 
         author = input("Enter author (-1 when done): ")
-        
+
         if(author != "-1"):
             authors.append(author)
 
