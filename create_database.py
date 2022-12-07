@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Alex"
+SQLusername = "Brian"
 SQLpassword = "3005"
 
-SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -45,7 +45,7 @@ def connect():
           email_addr  varchar(50),
           pname        varchar(50),
           address     varchar(50),
-          money_transfered   NUMERIC(5, 2),
+          money_transfered   NUMERIC(10, 2),
           primary key (email_addr)
       );
       """,
@@ -285,7 +285,7 @@ def load_db():
     for book in books:
         cur.execute(book,)
 
-    query = "INSERT INTO publisher(email_addr, pname, address, money_transfered) VALUES(%s, %s, %s,%s)"
+    query = "INSERT INTO publisher(email_addr, pname, address, money_transfered) VALUES(%s, %s, %s,%s) ON CONFLICT(email_addr) DO NOTHING;"
     vars = ("scary@gmail.com", "Scary Inc", "123 Scary Lane", "0")
     cur.execute(query, vars)
 

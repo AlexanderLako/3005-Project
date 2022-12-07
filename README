@@ -4,20 +4,23 @@ Brian Yang 101140298
 Alexander Lako 101186147
 Noah Wilson 101188716
 
+********IMPORTANT*******
 
-  BEFORE YOU RUN (having python is required):
+Instructions to install and set up environment:
 
-  First you need to install and psycopg2
-  Open a terminal where the project is located
-  Type "pip install psycopg2"
-  Note: DO NOT try to install in VScode, it will not work
+BEFORE YOU RUN (having python is required):
 
-  Next, open pgAdmin, create a database called '3005Project'
+First you need to install psycopg2
+Open a terminal where the project is located by cloning the repository
+Type "pip install psycopg2" in the terminakl
+Note: DO NOT try to install in VScode, it will not work
 
-  There are two options in order to connect to the database;
+Next, open pgAdmin, create a database called '3005Project'
+
+There are two options in order to connect to the database;
 
 1)
-  Locate the project_3005.py SQLpassword variable located at the top of the file
+  Locate the application.py SQLpassword variable located at the top of the file
   Modify it to reflect the password you used to connect to the server
   SQLusername should be 'postgres'
 
@@ -36,17 +39,22 @@ Instructions to run program:
   1) Create the database using the command "Python3 create_database.py" in the terminal
      which runs the script to create the database and inserts some tuples
 
-  2) Run the application script using the commmand "Python3 application.py" in the terminal
+  2) Run the application script using the command "Python3 application.py" in the terminal
 
-  3) Answer the prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
+  3) When the application is open, answer the prompts by typing in either 1, 2, 3, etc. as specified and pressing Enter
+     to test functionality.
+
+  4) Check the updated relations in PGAdmin to see any changes to the database
+
+
 
 
 Use Cases:
-  - Querying tracking info for existing orders as a customer
-  - Creating a new user
+  - Querying orders and tracking info for existing orders as a customer
+  - Register a new user and logging in with that username
   - Placing an order as a registered user by adding books to the cart
   - Search the catalogue by ISBN, genre, author, book name
   - Checking reports (sales vs. expenditure, genre sales, author sales) as an owner
   - Adding and removing books as an owner
 
-  Note that error checks are not implemented (ex. handling invalid inputs)
+  Note that some error checks are not implemented (ex. handling invalid inputs)
