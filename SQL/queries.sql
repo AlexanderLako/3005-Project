@@ -1,3 +1,8 @@
+/* Note that %s represents a parameter passed into the query */
+
+
+
+
 /*Retrieves user information with given username from store_user*/
 SELECT *
 FROM store_user
