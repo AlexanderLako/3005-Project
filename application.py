@@ -102,7 +102,10 @@ def query_order():
         return
 
     tracking_info = check[0]
-    print("Your order's tracking information is: " + tracking_info)
+
+    display_order(user_prompt)
+
+    print("Your order is currently in " + tracking_info)
 
 # check if user with given username exists
 def user_exists(username):
@@ -320,7 +323,7 @@ def user_cart(username):
         quantity_in_cart = 0
         for order_part in cart:
             if order_part[0] == isbn:
-                quantity_in_cart += int(quantity)
+                quantity_in_cart += int(order_part[1])
 
         Qquery = """
                  SELECT quantity_remaining
@@ -332,7 +335,7 @@ def user_cart(username):
         q_in_stock = cur.fetchone()[0]
 
         #check if enough books are available to purchase
-        if (quantity_in_cart + int(quantity)) > q_in_stock:
+        if (quantity_in_cart + int(quantity)) > int(q_in_stock):
             print("Not enough of book #" + isbn + " in stock to add to cart")
             continue
 
@@ -369,7 +372,7 @@ def checkout_cart(cart, username):
 
     update_book_quantities(cart)
 
-    # update tuples in publisher relation
+    display_order(order_num)
 
 
 # adds all items in the cart to the order_contains relation using the order number
@@ -529,6 +532,23 @@ def pay_publisher(isbn, quantity):
               """
     vars = (amt, pub_email)
     cur.execute(pay_pub, vars)
+
+
+def display_order(order_num):
+    q_order_num = """
+                  SELECT isbn, quantity
+                  FROM order_contains
+                  WHERE order_num = %s;
+                  """
+    vars = (order_num,)
+    cur.execute(q_order_num, vars)
+
+    items = cur.fetchall()
+    print("\nOrder number: " + str(order_num))
+    print("\nISBN       quantity")
+    for item in items:
+        print("  " + str(item[0]) + "           " + str(item[1]))
+
 
 
 

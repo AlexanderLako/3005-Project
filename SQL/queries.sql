@@ -103,7 +103,13 @@ WHERE ISBN = %s;
 /*Calculate and give the sales and expenditures from a sub-relation containing revenue and money_transfered from the book and publisher relations*/
 SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
 FROM (
-    SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered
+    SELECT ((book.price- book.price * book.com_percentage) * book.num_sold) AS revenue, publisher.money_transfered
     FROM book, publisher
     WHERE book.email_addr = publisher.email_addr
 ) sVe_table;
+
+
+/* displays all the contents of an order to a user using an order number*/
+SELECT isbn, quantity
+FROM order_contains
+WHERE order_num = %s;
