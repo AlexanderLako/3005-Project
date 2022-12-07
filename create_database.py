@@ -2,10 +2,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "3005"
+SQLusername = "postgres"
+SQLpassword = ""
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -13,10 +13,11 @@ conn = psycopg2.connect(SQLstring)
 conn.autocommit = True
 cur = conn.cursor()
 
+
+# connects to the database and adds the relations
 def connect():
 
-
-
+    # the ddl commands
     commands = (
     """
     create table if NOT exists store_user
@@ -121,7 +122,7 @@ def connect():
     # create a cursor
 
 
-# execute a statement
+    # execute a statement
     print('PostgreSQL database version:')
     cur.execute('SELECT version()')
 
@@ -131,7 +132,7 @@ def connect():
     conn.commit()
 
 
-
+# fills the database with books and publishers
 def load_db():
 
     books = (
