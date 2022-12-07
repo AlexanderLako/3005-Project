@@ -142,7 +142,7 @@ def load_db():
     """,
     """
     INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
-    VALUES(1, 15, 0, 420, 69, 'Fifty_Shades', 0.25, 'bruh@bro.ca', 'true')
+    VALUES(1, 15, 0, 420, 69, 'Fifty Shades of Grey', 0.25, 'bruh@bro.ca', 'true')
     ON CONFLICT (ISBN) DO NOTHING;
     """,
     """
@@ -193,10 +193,16 @@ def load_db():
     ON CONFLICT (ISBN, aname) DO NOTHING;
     """,
 
+
     """
     INSERT INTO publisher(email_addr, pname, address, money_transfered)
     VALUES('cwheezer@gmail.com', 'Carl Wheezer', 'Jimmys moms house', 0)
     ON CONFLICT (email_addr) DO NOTHING;
+    """,
+    """
+    INSERT INTO phone_number(email_addr, phone_number)
+    VALUES ('cwheezer@gmail.com', '613 123 123')
+    ON CONFLICT (phone_number, email_addr) DO NOTHING;
     """,
     """
     INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
@@ -222,8 +228,58 @@ def load_db():
     INSERT INTO author(ISBN, aname)
     VALUES(3, 'Carl Wheezer')
     ON CONFLICT (ISBN, aname) DO NOTHING;
-    """
+    """,
 
+
+
+    """
+    INSERT INTO publisher(email_addr, pname, address, money_transfered)
+    VALUES('jmama@gmail.com', 'Joseph Mama', 'Joe moms house', 0)
+    ON CONFLICT (email_addr) DO NOTHING;
+    """,
+    """
+    INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available)
+    VALUES(4, 15, 0, 123, 60, 'Fifty Shades Darker', 0.3, 'jmama@gmail.com', 'true')
+    ON CONFLICT (ISBN) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(4, 'fantasy')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(4, 'how-to')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO genre(ISBN, gname)
+    VALUES(4, 'horror')
+    ON CONFLICT (ISBN, gname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(4, 'Joseph Mama')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """,
+    """
+    INSERT INTO author(ISBN, aname)
+    VALUES(4, 'Michael Wazowski')
+    ON CONFLICT (ISBN, aname) DO NOTHING;
+    """,
+
+
+
+    """
+    INSERT INTO store_user(username, u_addr, card_number)
+    VALUES('Michael Wazowski', 'Monsters Inc.', '9876')
+    ON CONFLICT(username) DO NOTHING;
+    """,
+    """
+    INSERT INTO store_user(username, u_addr, card_number)
+    VALUES('test_user', 'test_addr', 'test_card')
+    ON CONFLICT(username) DO NOTHING;
+    """
   )
 
     for book in books:

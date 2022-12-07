@@ -600,7 +600,7 @@ def query_sale_v_expenditure():
     sEquery = """
         SELECT sum(revenue) AS sales, sum(money_transfered) AS expenditures
         FROM (
-            SELECT (book.price * book.num_sold) AS revenue, publisher.money_transfered
+            SELECT ((book.price- book.price * book.com_percentage) * book.num_sold) AS revenue, publisher.money_transfered
             FROM book, publisher
             WHERE book.email_addr = publisher.email_addr
         ) sVe_table;
