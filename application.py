@@ -5,10 +5,10 @@ import psycopg2
 
 # user code
 
-SQLusername = "Brian"
-SQLpassword = "Brian"
+SQLusername = "Alex"
+SQLpassword = "3005"
 
-SQLstring = "dbname=test user={} password={}".format(SQLusername, SQLpassword)
+SQLstring = "dbname=3005Project user={} password={}".format(SQLusername, SQLpassword)
 
 
 conn = None
@@ -141,6 +141,7 @@ def register():
 
         u_add = input("\nEnter an address: ")
 
+        #Insert username, card number, and user address into the store_user table
         query = "INSERT INTO store_user(username, card_number, u_addr) VALUES(%s, %s, %s);"
         vars = (username, card, u_add)
 
@@ -445,7 +446,7 @@ def create_order(username):
         cur.execute(U_card_query, vars)
         card_num = cur.fetchone()
 
-    #create a new store order with provided information
+    #create a new store order with provided information and insert into the table
     new_order = """
                 INSERT INTO store_order(tracking_info, username, shipping_info, billing_info)
                 VALUES(%s, %s, %s, %s);
@@ -713,6 +714,7 @@ def add_book():
     num_sold = 0
     quantity = 15
 
+    #insert user values into the book table to create a new book
     query = "INSERT INTO book(ISBN, quantity_remaining, num_sold, pages, price, bname, com_percentage, email_addr, available) VALUES(%s, %s, %s,%s, %s, %s,%s, %s, %s)"
     vars = (ISBN, quantity, num_sold, pages, price, name, com_percentage, publisher, 'true')
     cur.execute(query, vars)
@@ -743,6 +745,7 @@ def update_publisher(addr):
     address = input("Enter publisher address: ")
     money_transfered = 0
 
+    #insert publisher email, name, address, and money transfered into the table
     query = "INSERT INTO publisher(email_addr, pname, address, money_transfered) VALUES(%s, %s, %s, %s) ON CONFLICT (email_addr) DO NOTHING;"
     vars = (addr, pname, address, money_transfered)
     cur.execute(query, vars)
@@ -763,6 +766,7 @@ def update_publisher(addr):
 
     i = 0
     while i < len(phoneNumbers):
+        #For each phone number the publisher has, insert it with publishers email
         query = "INSERT INTO phone_number(email_addr, phone_number) VALUES(%s, %s) ON CONFLICT (email_addr, phone_number) DO NOTHING;"
         vars = (addr, phoneNumbers[i])
         cur.execute(query, vars)
